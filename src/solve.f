@@ -3106,6 +3106,8 @@ ccccccccccccccccc auxilliary functions ccccccccccccc
          END IF
       END IF
 *
+* karline: to avoid uninitialised warning
+         RMACH = EPS
       IF( LSAME( CMACH, 'E' ) ) THEN
          RMACH = EPS
       ELSE IF( LSAME( CMACH, 'S' ) ) THEN

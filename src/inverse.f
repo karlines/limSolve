@@ -1548,7 +1548,8 @@ C         Write (*,*) "NOT DEFINED FOR IDUM = ", Idum
       ENDIF
 
       IF (First(Idum)) THEN 
-
+C Karline: to avoid uninitialised warning
+       D1MACH = 1.D300
        First(Idum) = .FALSE.
 
        SELECT CASE (IDUM)

@@ -73,7 +73,8 @@
 
 \examples{
 # 1. parsimonious (simplest) solution
-pars <- lsei(E = E_coli$A, F = E_coli$B, G = E_coli$G, H = E_coli$H)$X
+pars <- lsei(E = E_coli$A, F = E_coli$B, 
+             G = E_coli$G, H = E_coli$H)$X
 
 # 2. the optimal solution - solved with linear programming
 #    some unknowns can be negative
@@ -88,6 +89,7 @@ xr   <- xranges(E = E_coli$A, F = E_coli$B, G = E_coli$G, H = E_coli$H,
 
 # the central point is a valid solution:
 X <- xr[ ,"central"]
+
 max(abs(E_coli$A\%*\%X - E_coli$B))
 min(E_coli$G\%*\%X - E_coli$H)
 
