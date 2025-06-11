@@ -36,6 +36,7 @@ jobs:
     - uses: r-hub/actions/setup@v1
       with:
         config: ${{ github.event.inputs.config }}
+        extra-packages: any::rcmdcheck
       id: rhub-setup
 
   linux-containers:
