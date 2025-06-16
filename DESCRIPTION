@@ -1,5 +1,5 @@
 Package: limSolve
-Version: 2.0
+Version: 2.0.1
 Title: Solving Linear Inverse Models
 Authors@R: c(person("Karline","Soetaert", role = c("aut","cre"), 
                      email = "karline.soetaert@nioz.nl"),
