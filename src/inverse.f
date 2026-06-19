@@ -976,16 +976,22 @@ C   890831  REVISION DATE from Version 3.2
 C   891214  Prologue converted to Version 4.0 format.  (BAB)
 C   920501  Reformatted the REFERENCES section.  (WRB)
 C***END PROLOGUE  xDNRM2
+C karline: remove DATA and SAVE 
       INTEGER NEXT, N,NN,INCX,I,J
       DOUBLE PRECISION DX(*), CUTLO, CUTHI, HITEST, SUM, XMAX, ZERO,       
      &                 ONE
-      SAVE CUTLO, CUTHI, ZERO, ONE
-      DATA ZERO, ONE /0.0D0, 1.0D0/
+!      SAVE CUTLO, CUTHI, ZERO, ONE   KARLINE - REMOVED
+!      DATA ZERO, ONE /0.0D0, 1.0D0/  KARLINE - REMOVED
+      ZERO = 0.D0
+      ONE  = 1.0D0
+      
 C
-      DATA CUTLO, CUTHI /8.232D-11,  1.304D19/
+!      DATA CUTLO, CUTHI /8.232D-11,  1.304D19/ KARLINE - REMOVED
+      CUTLO = 8.232D-11
+      CUTHI = 1.304D19
       
 C Karline: initialised xmax, to avoid uninitialized warning
-            XMAX = ZERO
+      XMAX = ZERO
 
 C***FIRST EXECUTABLE STATEMENT  xDNRM2
       IF (N .GT. 0) GO TO 10
@@ -4195,7 +4201,10 @@ c
      & DPARAM,DY,W,ZERO
       INTEGER N,INCX,INCY,NSTEPS,I,KX,KY
       DIMENSION DX(*),DY(*),DPARAM(5)
-      DATA ZERO,TWO/0.D0,2.D0/
+c      DATA ZERO,TWO/0.D0,2.D0/   KARLINE: REMOVED
+       ZERO = 0.D0
+       TWO  = 2.D0
+
 c
       DFLAG=DPARAM(1)
       IF(N .LE. 0 .OR.(DFLAG+TWO.EQ.ZERO)) GO TO 140
@@ -4328,8 +4337,15 @@ c
       INTEGER IGO
       DIMENSION DPARAM(5)
 c
-      DATA ZERO,ONE,TWO /0.D0,1.D0,2.D0/
-      DATA GAM,GAMSQ,RGAMSQ/4096.D0,16777216.D0,5.9604645D-8/
+c     DATA ZERO,ONE,TWO /0.D0,1.D0,2.D0/          KARLINE: removed this
+c      DATA GAM,GAMSQ,RGAMSQ/4096.D0,16777216.D0,5.9604645D-8/
+      ZERO = 0.D0 
+      ONE  = 1.D0
+      TWO  = 2.D0
+      GAM  = 4096.D0
+      GAMSQ = 16777216.D0
+      RGAMSQ = 5.9604645D-8
+
 C Karline: initialized DH.. to avoid uninitialized warning
           DH11=ZERO
           DH12=ZERO
@@ -4563,8 +4579,11 @@ c
      &     NP1
       DOUBLE PRECISION A(MDA,*), xDDOT, xDNRM2, FAC, ONE,                       
      &     PRGOPT(*), RNORM, SC, WNORM, WS(*), X(*), YNORM, ZERO
-      SAVE ZERO, ONE, FAC
-      DATA ZERO,ONE /0.0D0,1.0D0/, FAC /0.1D0/
+c      SAVE ZERO, ONE, FAC                          KARLINE: REMOVED
+c      DATA ZERO,ONE /0.0D0,1.0D0/, FAC /0.1D0/    
+      ZERO = 0.0D0
+      ONE  = 1.0D0
+      FAC  = 0.1D0
 c***FIRST EXECUTABLE STATEMENT  DLPDP
       N = N1 + N2
       MODE = 1
