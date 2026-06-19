@@ -173,7 +173,7 @@ lsei <- function(A=NULL, B=NULL, E=NULL, F=NULL, G=NULL, H=NULL,
         }
       }
     }
-    mdW <- Neq + Napp + ineq
+    mdW <- Neq + Napp + ineq +1  # KARLINE: 19/06/2026 added +1 to make it large enough
     if (fulloutput)
       mdW <- max(mdW, Nx)
     mWS <- 2*(Neq+Nx)+max(Napp+ineq,Nx)+(ineq+2)*(Nx+7)
