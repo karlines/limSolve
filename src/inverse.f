@@ -2260,7 +2260,11 @@ c     Move reduced problem data upward if KRANKE.LT.ME.
 c
       IF (KRANKE.LT.ME) THEN
          DO 200 J = 1,NP1
-            CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+!            CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+
+           DO K = 1, M - ME
+              W(KRANKE+K,J) = W(ME+K,J)
+           END DO
   200    CONTINUE
       ENDIF
 c
