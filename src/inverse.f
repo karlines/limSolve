@@ -584,7 +584,7 @@ C
       IF (ITER .gt. ITMAX) then
          MODE=3
 C         write (*,'(/a)') ' NNLS quitting on iteration count.'
-      CALL XMESSAGE ('error in LDP - NNLS quitting on iteration count.')
+      CALL rwarn ('error in LDP - NNLS quitting on iteration count.')
          GO TO 350 
       endif
 C   
@@ -1544,18 +1544,18 @@ C-----------------------------------------------------------------------
       DOUBLE PRECISION U, COMP
       DOUBLE PRECISION :: Prec(4)  
       LOGICAL          :: First(4) 
-      SAVE Prec, FIRST
-      DATA FIRST /.TRUE.,.TRUE.,.TRUE.,.TRUE./
-      DATA Prec /1.D-8,1.D-8,1.D-8,1.D-8/
+C      SAVE Prec, FIRST
+C      DATA FIRST /.TRUE.,.TRUE.,.TRUE.,.TRUE./
+C      DATA Prec /1.D-8,1.D-8,1.D-8,1.D-8/
 
 
       IF (Idum > 4 .OR. Idum < 0) THEN
 C         Write (*,*) "Error in function D1MACH"
 C         Write (*,*) "NOT DEFINED FOR IDUM = ", Idum
-       CALL XMESSAGE("Error in function D1MACH-NOT DEFINED FOR IDUM  ") 
+       CALL rexit("Error in function D1MACH-NOT DEFINED FOR IDUM  ") 
       ENDIF
 
-      IF (First(Idum)) THEN 
+C      IF (First(Idum)) THEN 
 C Karline: to avoid uninitialised warning
        D1MACH = 1.D300
        First(Idum) = .FALSE.
@@ -1574,18 +1574,17 @@ C Unit roundoff
          IF (COMP .NE. 1.0D0) GO TO 10
          D1MACH = U*2.0D0
         CASE Default
-C         Write (*,*) "Error in function D1MACH"
-C         Write (*,*) "NOT DEFINED FOR IDUM = ", Idum
-         CALL XMESSAGE("Error in function D1MACH-NOT DEFINED FOR IDUM ")
+
+         CALL rexit("Error in function D1MACH-NOT DEFINED FOR IDUM ")
        END SELECT
 
-       PREC (Idum) = D1MACH
+C       PREC (Idum) = D1MACH
 
-      ELSE
+C      ELSE
 
-       D1mach = Prec(IDUM)
+C       D1mach = Prec(IDUM)
 
-      ENDIF
+C      ENDIF
 
       RETURN
 
