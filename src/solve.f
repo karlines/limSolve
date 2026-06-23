@@ -2700,15 +2700,15 @@ ccccccccccccccccc auxilliary functions ccccccccccccc
       EXTERNAL           DLAMC2
 *     ..
 *     .. Save statement ..
-      SAVE               FIRST, EPS, SFMIN, BASE, T, RND, EMIN, RMIN,
-     $                   EMAX, RMAX, PREC
+C      SAVE               FIRST, EPS, SFMIN, BASE, T, RND, EMIN, RMIN,
+C     $                   EMAX, RMAX, PREC
 *     ..
 *     .. Data statements ..
-      DATA               FIRST / .TRUE. /
+C      DATA               FIRST / .TRUE. /
 *     ..
 *     .. Executable Statements ..
 *
-      IF( FIRST ) THEN
+C      IF( FIRST ) THEN
          CALL DLAMC2( BETA, IT, LRND, EPS, IMIN, RMIN, IMAX, RMAX )
          BASE = BETA
          T = IT
@@ -2731,7 +2731,7 @@ ccccccccccccccccc auxilliary functions ccccccccccccc
 *
             SFMIN = SMALL*( ONE+EPS )
          END IF
-      END IF
+C      END IF
 *
 * karline: to avoid uninitialised warning
          RMACH = EPS
@@ -2852,15 +2852,15 @@ ccccccccccccccccc auxilliary functions ccccccccccccc
       INTRINSIC          ABS, MAX, MIN
 *     ..
 *     .. Save statement ..
-      SAVE               FIRST, IWARN, LBETA, LEMAX, LEMIN, LEPS, LRMAX,
-     $                   LRMIN, LT
+C      SAVE               FIRST, IWARN, LBETA, LEMAX, LEMIN, LEPS, LRMAX,
+C     $                   LRMIN, LT
 *     ..
 *     .. Data statements ..
-      DATA               FIRST / .TRUE. / , IWARN / .FALSE. /
+C      DATA               FIRST / .TRUE. / , IWARN / .FALSE. /
 *     ..
 *     .. Executable Statements ..
 *
-      IF( FIRST ) THEN
+C      IF( FIRST ) THEN
          FIRST = .FALSE.
          ZERO = 0
          ONE = 1
@@ -2907,7 +2907,7 @@ ccccccccccccccccc auxilliary functions ccccccccccccc
             C = DLAMC3( HALF, -B )
             B = DLAMC3( HALF, C )
             GO TO 10
-         END IF
+C         END IF
 *+       END WHILE
 *
          IF( A.LT.LEPS )
@@ -3088,14 +3088,14 @@ C         END IF
       EXTERNAL           DLAMC3
 *     ..
 *     .. Save statement ..
-      SAVE               FIRST, LIEEE1, LBETA, LRND, LT
+C      SAVE               FIRST, LIEEE1, LBETA, LRND, LT
 *     ..
 *     .. Data statements ..
-      DATA               FIRST / .TRUE. /
+C      DATA               FIRST / .TRUE. /
 *     ..
 *     .. Executable Statements ..
 *
-      IF( FIRST ) THEN
+C      IF( FIRST ) THEN
          FIRST = .FALSE.
          ONE = 1
 *
@@ -3199,7 +3199,7 @@ C         END IF
          END IF
 *+       END WHILE
 *
-      END IF
+C      END IF
 *
       BETA = LBETA
       T = LT
