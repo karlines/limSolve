@@ -164,7 +164,7 @@ C CALLING SOLVER!
      &              ME,                                                   
      &              MA,                                                  
      &              MG,                                                  
-     &              N,                                                   
+     &              N,  mIP, mWS, LPR,                                                  
      &              ProgOpt,                                                  
      &              X,                                                        
      &              RNORME,                                                   
@@ -1619,9 +1619,10 @@ c                !>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>!
 c                !>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>!
 
 
-c   LINPACK routine
+c   LINPACK routine KARLINE: added mIP, mWS, LPR
 
-      SUBROUTINE xDLSEI (W, MDW, ME, MA, MG, N, PRGOPT, X, RNORME,       
+      SUBROUTINE xDLSEI (W, MDW, ME, MA, MG, N, mIP, mWS, LPR,                  
+     &  PRGOPT, X, RNORME,       
      &   RNORML, MODE, WS, IP)
 c***BEGIN PROLOGUE  xDLSEI
 c***PURPOSE  Solve a linearly constrained least squares problem with
@@ -2005,9 +2006,13 @@ c   900510  Convert XERRWV calls to xXERMSG calls.  (RWC)
 c   900604  DP version created from SP version.  (RWC)
 c   920501  Reformatted the REFERENCES section.  (WRB)
 c***END PROLOGUE  xDLSEI
-C KARLINE: CHANGED IP(3) INTO IP(*) ????
-      INTEGER IP(*), MA, MDW, ME, MG, MODE, N
-      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,*), WS(*), X(*)
+C KARLINE: CHANGED IP(3) INTO IP(*) ???? - added mIP, mWS, LPR
+      INTEGER mIP, mWS, LPR 
+      INTEGER IP(mIP), MA, MDW, ME, MG, MODE, N
+C KARLINE: CHANGED W(MDW,*) INTO W(MDW, N+1) ????
+      
+      DOUBLE PRECISION PRGOPT(LPR),RNORME,RNORML
+      DOUBLE PRECISION W(MDW,N+1),WS(mWS),X(N)
 c
       EXTERNAL D1MACH, xDASUM, xDAXPY, xDCOPY,xDDOT,xDH12,DLSI,xDNRM2,           
      &   xDSCAL, xDSWAP, xXERMSG
