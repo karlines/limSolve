@@ -99,7 +99,7 @@ C The arrays and dimensions for the mass balance inversion
      &                      X (NUnknowns)                     
 C work arrays
       DOUBLE PRECISION :: W(MDW,NUnknowns+1),WS(mWS)
-      INTEGER          :: IP(mip)
+      INTEGER          :: IP(mIP)
 
       INTEGER          :: I,J,K,MOde,ME, MA, MG,N
       DOUBLE PRECISION :: RNORME, RNORML,ProgOpt(lpr)
@@ -2005,7 +2005,8 @@ c   900510  Convert XERRWV calls to xXERMSG calls.  (RWC)
 c   900604  DP version created from SP version.  (RWC)
 c   920501  Reformatted the REFERENCES section.  (WRB)
 c***END PROLOGUE  xDLSEI
-      INTEGER IP(3), MA, MDW, ME, MG, MODE, N
+C KARLINE: CHANGED IP(3) INTO IP(*) ????
+      INTEGER IP(*), MA, MDW, ME, MG, MODE, N
       DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,*), WS(*), X(*)
 c
       EXTERNAL D1MACH, xDASUM, xDAXPY, xDCOPY,xDDOT,xDH12,DLSI,xDNRM2,           
@@ -2266,11 +2267,11 @@ c     Move reduced problem data upward if KRANKE.LT.ME.
 c
       IF (KRANKE.LT.ME) THEN
          DO 200 J = 1,NP1
-!            CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+            CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
 
-           DO K = 1, M - ME
-              W(KRANKE+K,J) = W(ME+K,J)
-           END DO
+!           DO K = 1, M - ME
+!              W(KRANKE+K,J) = W(ME+K,J)
+!           END DO
   200    CONTINUE
       ENDIF
 c
