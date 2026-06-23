@@ -2023,9 +2023,9 @@ c KARLINE:
      &   NTIMES
       LOGICAL COV, FIRST
 C      CHARACTER(LEN=8) XERN1, XERN2, XERN3, XERN4
-      SAVE FIRST, DRELPR
+C      SAVE FIRST, DRELPR
 c
-      DATA FIRST /.TRUE./
+C      DATA FIRST /.TRUE./
 c***FIRST EXECUTABLE STATEMENT  xDLSEI
 c
 c     Set the nominal tolerance used in the code for the equality
@@ -2034,8 +2034,9 @@ c
 C karline: initialised IMAX to avoid unitialized warning
       IMAX = 0
       
-      IF (FIRST) DRELPR = D1MACH(4)
-      FIRST = .FALSE.
+C      IF (FIRST) DRELPR = D1MACH(4)
+      DRELPR = D1MACH(4)
+C      FIRST = .FALSE.
       TAU = SQRT(DRELPR)
 c
 c     Check that enough storage was allocated in WS(*) and IP(*).
@@ -2437,15 +2438,16 @@ c
      &   MDLPDP, MINMAN, N1, N2, N3, NEXT, NP1, MDB 
       LOGICAL COV, FIRST, SCLCOV
 c
-      SAVE DRELPR, FIRST
-      DATA FIRST /.TRUE./
+C      SAVE DRELPR, FIRST
+C      DATA FIRST /.TRUE./
 c
 c***FIRST EXECUTABLE STATEMENT  DLSI
 c
 c     Set the nominal tolerance used in the code.
 c
-      IF (FIRST) DRELPR = D1MACH(4)
-      FIRST = .FALSE.
+C      IF (FIRST) DRELPR = D1MACH(4)
+       DRELPR = D1MACH(4)
+C      FIRST = .FALSE.
       TOL = SQRT(DRELPR)
 c
       MODE = 0
@@ -3094,16 +3096,17 @@ c
      &   NOPT, NSOLN, NTIMES
       LOGICAL DONE, FEASBL, FIRST, HITCON, POS
 c
-      SAVE DRELPR, FIRST
-      DATA FIRST /.TRUE./
+C      SAVE DRELPR, FIRST
+C      DATA FIRST /.TRUE./
 c***FIRST EXECUTABLE STATEMENT  DWNLSM
 c
 c     Initialize variables.
 c     DRELPR is the precision for the particular machine
 c     being used.  This logic avoids resetting it every entry.
 c
-      IF (FIRST) DRELPR = D1MACH(4)
-      FIRST = .FALSE.
+C      IF (FIRST) DRELPR = D1MACH(4)
+       DRELPR = D1MACH(4)
+C      FIRST = .FALSE.
 c
 c     Set the nominal tolerance used in the code.
 c
@@ -5013,11 +5016,12 @@ c***END PROLOGUE  xDHFTI
       DOUBLE PRECISION A, B, D1MACH, DZERO, FACTOR,                             
      &     G, H, HMAX, RELEPS, RNORM, SM, SM1, SZERO, TAU, TMP
       DIMENSION A(MDA,*),B(MDB,*),H(*),G(*),RNORM(*)
-      SAVE RELEPS
-      DATA RELEPS /0.D0/
+C      SAVE RELEPS
+C      DATA RELEPS /0.D0/
 c     BEGIN BLOCK PERMITTING ...EXITS TO 360
 c***FIRST EXECUTABLE STATEMENT  xDHFTI
-         IF (RELEPS.EQ.0.D0) RELEPS = D1MACH(4)
+C         IF (RELEPS.EQ.0.D0) RELEPS = D1MACH(4)
+         RELEPS = D1MACH(4)
          SZERO = 0.0D0
          DZERO = 0.0D0
          FACTOR = 0.001D0
