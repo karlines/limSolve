@@ -2344,6 +2344,7 @@ c
                DO 260 I = JP1,N
                   W(J,I) = UJ*W(I,J) + VJ*W(J,I)
   260          CONTINUE
+               CALL xMESSAGE ("LINE2347 ")
                CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
   270       CONTINUE
          ENDIF
