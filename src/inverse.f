@@ -158,7 +158,6 @@ C W is Working array with E,A,G   ,F,B,H
 
     
 C CALLING SOLVER!
-        CALL rwarn("in lsei now")
 
         CALL xdLSEI(W,                                                        
      &              MDW,                                                      
@@ -2570,6 +2569,7 @@ c
                RNORM = SQRT(RNORM**2+XNORM**2)
             ENDIF
          ELSE
+          CALL rwarn("in lsei mode = 3 L2572")
             MODE = 2
          ENDIF
       ELSE
