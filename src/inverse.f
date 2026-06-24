@@ -2043,39 +2043,22 @@ c     Check that enough storage was allocated in WS(*) and IP(*).
 c
       MODE = 4
       IF (MIN(N,ME,MA,MG) .LT. 0) THEN
-c         WRITE (XERN1, '(I8)') N
-c         WRITE (XERN2, '(I8)') ME
-c         WRITE (XERN3, '(I8)') MA
-c         WRITE (XERN4, '(I8)') MG
-C KARLINE: REMOVED WRITE and xXERMSG         
-         CALL rexit ('LSEI: THE VARIABLES N, ME,MA, MG MUST BE>0')
-c         CALL xXERMSG ('SLATEC', 'LSEI', 'ALL OF THE VARIABLES N, ME,'//      
-c     &      ' MA, MG MUST BE .GE. 0 ENTERED ROUTINE WITH' //                  
-c     &      ' N  = ' // XERN1 //                                             
-c     &      ' ME = ' // XERN2 //                                             
-c     &      ' MA = ' // XERN3 //                                             
-c     &      ' MG = ' // XERN4, 2, 1)
-         RETURN
+         CALL rexit ('LSEI: THE VARIABLES N, ME, MA, MG MUST BE>0')
       ENDIF
 c
       IF (IP(1).GT.0) THEN
          LCHK = 2*(ME+N) + MAX(MA+MG,N) + (MG+2)*(N+7)
          IF (IP(1).LT.LCHK) THEN
-C KARLINE: REMOVED WRITE  and xXERMSG        
-         CALL rexit ('LSEI: insufficient storage')
-c            WRITE (XERN1, '(I8)') LCHK
-c            CALL xXERMSG ('SLATEC', 'xDLSEI', 'INSUFFICIENT STORAGE ' //    
-c     &         'ALLOCATED FOR WS(*), NEED LW = ' // XERN1, 2, 1)
-            RETURN
+           CALL rexit ('LSEI: insufficient storage for WS')
+         RETURN
          ENDIF
       ENDIF
 c
       IF (IP(2).GT.0) THEN
          LCHK = MG + 2*N + 2
          IF (IP(2).LT.LCHK) THEN
-C KARLINE: REMOVED WRITE and xXERMSG
-         CALL rexit ('LSEI: insufficient storage for IP')
-            RETURN
+           CALL rexit ('LSEI: insufficient storage for IP')
+         RETURN
          ENDIF
       ENDIF
 c
@@ -2091,7 +2074,7 @@ c
       ENDIF
 c
       IF (MDW.LT.M) THEN 
-        CALL rwarn('xDLSEI: MDW .LT. ME+MA+MG IS AN ERROR')
+        CALL rexit('xDLSEI: MDW .LT. ME+MA+MG IS AN ERROR')
         RETURN
       ENDIF
 c
@@ -2123,14 +2106,14 @@ c
       LAST = 1
       LINK = INT(PRGOPT(1))
       IF (LINK.EQ.0 .OR. LINK.GT.NLINK) THEN
-      CALL rwarn ('xDLSEI: THE OPTION VECTOR IS UNDEFINED')
+      CALL rexit ('xDLSEI: THE OPTION VECTOR IS UNDEFINED')
          RETURN
       ENDIF
 c
   100 IF (LINK.GT.1) THEN
          NTIMES = NTIMES + 1
          IF (NTIMES.GT.NOPT) THEN
-       CALL rwarn ('xDLSEI:THE LINKS IN THE OPTION VECTOR ARE CYCLING')
+       CALL rwarn ('xDLSEI: LINKS IN THE OPTION VECTOR ARE CYCLING')
             RETURN
          ENDIF
 c
@@ -3135,7 +3118,8 @@ c
 c
 c     Define bound for positive value of LINK.
 c
-      NLINK = 100000
+C      NLINK = 100000  ! KS: changed this as nlink is known
+      NLINK = LPR  ! KS: lpr is passed from R
       NTIMES = 0
       LAST = 1
       LINK = INT(PRGOPT(1))
