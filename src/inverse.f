@@ -3217,6 +3217,7 @@ c
 c     Set the solution vector X(*) to zero and the column interchange
 c     matrix to the identity.
 c
+         CALL intpr("DWNLSM L", -1, 3221, 1)
       CALL XDCOPYSC (N, 0.D0, X, 1)
       DO 150 I = 1,N
          IPIVOT(I) = I
@@ -3233,6 +3234,7 @@ c     The arrays IDOPE(*) and DOPE(*) are used to pass
 c     information to DWNLIT().  This was done to avoid
 c     a long calling sequence or the use of COMMON.
 c
+         CALL intpr("DWNLSM L", -1, 3237, 1)
       IDOPE(1) = ME
       IDOPE(2) = NSOLN
       IDOPE(3) = L1
@@ -3281,6 +3283,7 @@ c
             ENDIF
   170    CONTINUE
       ENDIF
+         CALL intpr("DWNLSM L", -1, 3286, 1)
 c
 c     Increment iteration counter and check against maximum number
 c     of iterations.
@@ -3311,6 +3314,7 @@ c
 c
 c     Compute search direction and feasible point
 c
+         CALL intpr("DWNLSM L", -1, 3317, 1)
       IF (HITCON) THEN
 c
 c        To add constraints, use computed ALPHA to interpolate between
@@ -3321,6 +3325,7 @@ c
             X(J) = X(J) + ALPHA*(Z(J)-X(J))
   190    CONTINUE
          FEASBL = .FALSE.
+         CALL intpr("DWNLSM L", -1, 3328, 1)
 c
 c        Remove column JCON and shift columns JCON+1 through N to the
 c        left.  Swap column JCON into the N th position.  This achieves
