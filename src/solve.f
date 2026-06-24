@@ -166,7 +166,7 @@ c********************************************************************
       INTRINSIC          ABS, MAX
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA
+C      EXTERNAL           XERBLA
 *     ..
 *     .. Executable Statements ..
 *
@@ -179,7 +179,8 @@ c********************************************************************
          INFO = -7
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGTSV ', -INFO )
+C         CALL XERBLA( 'DGTSV ', -INFO )
+         CALL rexit( 'an error occurred in DGTSV ')
          RETURN
       END IF
 *
@@ -1045,7 +1046,7 @@ CCCCCCCCCCCCCCCCCCCCC  BANDED SYSTEMS
 *  =====================================================================
 *
 *     .. External Subroutines ..
-      EXTERNAL           DGBTRF, DGBTRS, XERBLA
+      EXTERNAL           DGBTRF, DGBTRS !, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -1069,7 +1070,9 @@ CCCCCCCCCCCCCCCCCCCCC  BANDED SYSTEMS
          INFO = -9
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGBSV ', -INFO )
+!         CALL XERBLA( 'DGBSV ', -INFO )
+         CALL rexit( 'an error occurred in DGBSV')
+
          RETURN
       END IF
 *
@@ -1176,7 +1179,7 @@ CCCCCCCCCCCCCCCCCCCCC  BANDED SYSTEMS
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMV, DGER, DSWAP, DTBSV, XERBLA
+      EXTERNAL           DGEMV, DGER, DSWAP, DTBSV !, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -1204,7 +1207,8 @@ CCCCCCCCCCCCCCCCCCCCC  BANDED SYSTEMS
          INFO = -10
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGBTRS', -INFO )
+         CALL rexit( 'an error occurred in DGBTRS')
+!         CALL XERBLA( 'DGBTRS', -INFO )
          RETURN
       END IF
 *
@@ -1385,7 +1389,7 @@ CCCCCCCCCCCCCCCCCCCCC  BANDED SYSTEMS
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DCOPY, DGBTF2, DGEMM, DGER, DLASWP, DSCAL,
-     $                   DSWAP, DTRSM, XERBLA
+     $                   DSWAP, DTRSM !, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -1412,7 +1416,8 @@ CCCCCCCCCCCCCCCCCCCCC  BANDED SYSTEMS
          INFO = -6
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGBTRF', -INFO )
+!         CALL XERBLA( 'DGBTRF', -INFO )
+         CALL rexit( 'an error occurred in DGBTRF')
          RETURN
       END IF
 *
@@ -1827,7 +1832,7 @@ C KARLINE-END
       EXTERNAL           IDAMAX
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGER, DSCAL, DSWAP, XERBLA
+      EXTERNAL           DGER, DSCAL, DSWAP !, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -1854,7 +1859,9 @@ C KARLINE-END
          INFO = -6
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGBTF2', -INFO )
+!         CALL XERBLA( 'DGBTF2', -INFO )
+         CALL rexit( 'an error occurred in DGBTF2')
+
          RETURN
       END IF
 *
@@ -2136,7 +2143,7 @@ cccccccccccc banded matrices
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLASWP, DTRSM, XERBLA
+      EXTERNAL           DLASWP, DTRSM !, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -2160,7 +2167,8 @@ cccccccccccc banded matrices
          INFO = -8
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGETRS', -INFO )
+!         CALL XERBLA( 'DGETRS', -INFO )
+         CALL rexit( 'an error occurred in DGETRS')
          RETURN
       END IF
 *
@@ -2277,7 +2285,7 @@ cccccccccccc banded matrices
       INTEGER            I, IINFO, J, JB, NB
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DGETF2, DLASWP, DTRSM, XERBLA
+      EXTERNAL           DGEMM, DGETF2, DLASWP, DTRSM !, XERBLA
 *     ..
 *     .. External Functions ..
 C     INTEGER            ILAENV
@@ -2299,7 +2307,8 @@ C      EXTERNAL           ILAENV
          INFO = -4
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGETRF', -INFO )
+!         CALL XERBLA( 'DGETRF', -INFO )
+         CALL rexit( 'an error occurred in DGETRF')
          RETURN
       END IF
 *
@@ -2444,7 +2453,7 @@ C      NB = ILAENV( 1, 'DGETRF', ' ', M, N, -1, -1 )
       EXTERNAL           DLAMCH, IDAMAX
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGER, DSCAL, DSWAP, XERBLA
+      EXTERNAL           DGER, DSCAL, DSWAP !, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -2462,7 +2471,8 @@ C      NB = ILAENV( 1, 'DGETRF', ' ', M, N, -1, -1 )
          INFO = -4
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGETF2', -INFO )
+!         CALL XERBLA( 'DGETF2', -INFO )
+         CALL rexit( 'an error occurred in DGETF2')
          RETURN
       END IF
 *
@@ -2586,7 +2596,7 @@ C      NB = ILAENV( 1, 'DGETRF', ' ', M, N, -1, -1 )
 *  =====================================================================
 *
 *     .. External Subroutines ..
-      EXTERNAL           DGETRF, DGETRS, XERBLA
+      EXTERNAL           DGETRF, DGETRS !, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -2606,7 +2616,8 @@ C      NB = ILAENV( 1, 'DGETRF', ' ', M, N, -1, -1 )
          INFO = -7
       END IF
       IF( INFO.NE.0 ) THEN
-         CALL XERBLA( 'DGESV ', -INFO )
+!         CALL XERBLA( 'DGESV ', -INFO )
+         CALL rexit( 'an error occurred in DGESV')
          RETURN
       END IF
 *
