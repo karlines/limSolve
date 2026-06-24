@@ -3349,6 +3349,12 @@ c
          IPIVOT(N) = ITEMP
          
          CALL intpr("DWNLSM L", -1, 3350, 1)
+         CALL intpr("N", -1, N, 1)
+         CALL intpr("JCON", -1, JCON, 1)
+         CALL intpr("N-JCON+1", -1, N-JCON+1, 1)
+         CALL dblepr("X", -1, X(JCON), 1)
+         CALL dblepr("X", -1, X(N-JCON+1), 1)
+
 c
 c        Similarly permute X(*) vector.
 c
