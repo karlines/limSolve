@@ -3351,25 +3351,15 @@ c
 c        Similarly permute X(*) vector.
 c
          CALL xDCOPY (N-JCON, X(JCON+1), 1, X(JCON), 1)
-         CALL intpr("N", -1, N, 1)
-         CALL intpr("JCON", -1, JCON, 1)
-         CALL intpr("N-JCON+1", -1, N-JCON+1, 1)
-         CALL dblepr("X", -1, X(JCON), 1)
-         CALL dblepr("X", -1, X(N-JCON+1), 1)
+         CALL intpr("DWNLSM L", -1, 3354, 1)
          X(N) = 0.D0
          NSOLN = NSOLN - 1
          NIV = NIV - 1
-         CALL intpr("DWNLSM L", -1, 3360, 1)
 c
 c        Retriangularize upper Hessenberg matrix after adding
 c        constraints.
 c
          I = KRANK + JCON - L
-         CALL intpr("DWNLSM L", -1, 3366, 1)
-         CALL intpr("DNSOLN", -1, NSOLN, 1)
-         CALL intpr("I", -1, I, 1)
-         CALL intpr("ITYPE", -1, ITYPE(I), 1)
-         CALL intpr("ITYPE+1", -1, ITYPE(I+1), 1)
          DO 230 J = JCON,NSOLN
          
             IF (ITYPE(I).EQ.0 .AND. ITYPE(I+1).EQ.0) THEN
@@ -3385,7 +3375,6 @@ c
                ENDIF
                
             ELSEIF (ITYPE(I).EQ.1 .AND. ITYPE(I+1).EQ.1) THEN
-         CALL intpr("DWNLSM L", -1, 3385, 1)
 c
 c              Zero IP1 to I in column J
 c
@@ -3444,11 +3433,9 @@ c        determined.  If any are infeasible, it is due to roundoff
 c        error.  Any that are non-positive will be set to zero and
 c        removed from the solution set.
 c
-         CALL intpr("DWNLSM L", -1, 3427, 1)
          DO 240 JCON = L+1,NSOLN
             IF (X(JCON).LE.0.D0) GO TO 250
   240    CONTINUE
-           CALL intpr("DWNLSM L", -1, 3430, 1)
 
          FEASBL = .TRUE.
   250    IF (.NOT.FEASBL) GO TO 200
@@ -3605,9 +3592,6 @@ c
 c     Copy right hand side into TEMP vector to use overwriting method.
 c
   330 ISOL = 1
-           CALL intpr("DWNLSM L", -1, 3587, 1)
-           CALL intpr("NIV L", -1, NIV, 1)
-
       IF (NSOLN.GE.ISOL) THEN
          CALL xDCOPY (NIV, W(1,N+1), 1, TEMP, 1)
          DO 340 J = NSOLN,ISOL,-1
@@ -3628,8 +3612,6 @@ c
 c
 c     Solve system.
 c
-           CALL intpr("NSOLN L", -1, 3610, 1)
-           CALL intpr("NSOLN", -1, NSOLN, 1)
       CALL xDCOPY (NSOLN, Z, 1, X, 1)
 c
 c     Apply Householder transformations to X(*) if KRANK.LT.L
@@ -4127,7 +4109,7 @@ c***END PROLOGUE  DWNNLS
       INTEGER IWORK(*), L, L1, L2, L3, L4, L5, LIW, LW, MA, MDW, ME,            
      &     MODE, N
 C KARLINE: CHANGED ASSUMED SIZE OF W     
-      DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,N+1), WORK(*), X(*)
+      DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,N+1), WORK(*), X(N)
 C      CHARACTER(LEN=8) XERN1
 c***FIRST EXECUTABLE STATEMENT  DWNNLS
       MODE = 0
@@ -4137,11 +4119,7 @@ c
          LW = ME + MA + 5*N
          IF (IWORK(1).LT.LW) THEN
 C KARLINE: REMOVED WRITE         
-         CALL rwarn ('DWNNLS: insufficient storage for work')
-  
-C            WRITE (XERN1, '(I8)') LW
-C            CALL xXERMSG ('SLATEC', 'DWNNLS', 'INSUFFICIENT STORAGE ' //       
-C     &         'ALLOCATED FOR WORK(*), NEED LW = ' // XERN1, 2, 1)
+           CALL rexit ('DWNNLS: insufficient storage for work')
             MODE = 2
             RETURN
          ENDIF
@@ -4151,20 +4129,20 @@ c
          LIW = ME + MA + N
          IF (IWORK(2).LT.LIW) THEN
 C KARLINE: REMOVED WRITE         
-         CALL rwarn ('DWNNLS: insufficient storage for iwork')
+         CALL rexit ('DWNNLS: insufficient storage for iwork')
           MODE = 2
             RETURN
          ENDIF
       ENDIF
 c
       IF (MDW.LT.ME+MA) THEN
-         CALL rwarn ('DWNNLS: THE VALUE MDW.LT.ME+MA IS AN ERROR')
+         CALL rexit ('DWNNLS: THE VALUE MDW.LT.ME+MA IS AN ERROR')
          MODE = 2
          RETURN
       ENDIF
 c
       IF (L.LT.0 .OR. L.GT.N) THEN
-         CALL rwarn ('DWNNLS: L.GE.0 .AND. L.LE.N IS REQUIRED')
+         CALL rexit ('DWNNLS: L.GE.0 .AND. L.LE.N IS REQUIRED')
          MODE = 2
          RETURN
       ENDIF
@@ -4594,7 +4572,6 @@ c      DATA ZERO,ONE /0.0D0,1.0D0/, FAC /0.1D0/
       FAC  = 0.1D0
 c***FIRST EXECUTABLE STATEMENT  DLPDP
       N = N1 + N2
-         CALL intpr("in DLDPDP N", -1, N, 1)
       MODE = 1
       IF (M .GT. 0) GO TO 20
          IF (N .LE. 0) GO TO 10
@@ -4667,11 +4644,10 @@ c              DO NOT CHECK LENGTHS OF WORK ARRAYS IN THIS USAGE OF
 c              DWNNLS( ).
                IS(1) = 0
                IS(2) = 0
-         CALL intpr("in DLDPDP Line 4680 M", -1, M, 1)
+         CALL intpr("in DLDPDP Line 4650: M", -1, M, 1)
          CALL intpr("in DLDPDP NP1", -1, NP1, 1)
-         CALL intpr("in DLDPDP N2", -1, N2, 1)
          CALL intpr("in DLDPDP IX", -1, IX, 1)
-         CALL intpr("in DLDPDP IW", -1, IW, 1)
+         CALL intpr("in DLDPDP IW", -1, IW+1, 1)
                
                CALL DWNNLS(WS,NP1,N2,NP1-N2,M,0,PRGOPT,WS(IX),RNORM,            
      &                     MODEW,IS,WS(IW+1))
