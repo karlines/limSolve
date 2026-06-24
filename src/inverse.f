@@ -153,11 +153,12 @@ C W is Working array with E,A,G   ,F,B,H
        ENDDO        
       K = K + NConstraints
 
-c      ProgOpt(1) = 1.D0
+!      ProgOpt(1) = 1.D0
 
 
     
 C CALLING SOLVER!
+        CALL rwarn("in lsei now")
 
         CALL xdLSEI(W,                                                        
      &              MDW,                                                      
@@ -3121,6 +3122,7 @@ c     Define bound for positive value of LINK.
 c
 C      NLINK = 100000  ! KS: changed this as nlink is known
       NLINK = LPR  ! KS: lpr is passed from R
+      
       NTIMES = 0
       LAST = 1
       LINK = INT(PRGOPT(1))
