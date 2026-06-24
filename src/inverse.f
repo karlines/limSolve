@@ -2569,7 +2569,6 @@ c
                RNORM = SQRT(RNORM**2+XNORM**2)
             ENDIF
          ELSE
-          CALL rwarn("in lsei mode = 3 L2572")
             MODE = 2
          ENDIF
       ELSE
@@ -3135,8 +3134,7 @@ c
   100 IF (LINK.GT.1) THEN
          NTIMES = NTIMES + 1
          IF (NTIMES.GT.NOPT) THEN
-      CALL rwarn ('DWNLSM:THE LINKS IN THE OPTION VECTOR ARE CYCLING')
-         
+         CALL rexit('DWNLSM: LINKS IN THE OPTION VECTOR ARE CYCLING')
             RETURN
          ENDIF
 c
@@ -3155,7 +3153,7 @@ c
 c
          NEXT = INT(PRGOPT(LINK))
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
-           CALL rwarn ('DWNLSM: THE OPTION VECTOR IS UNDEFINED')
+           CALL rexit ('DWNLSM: THE OPTION VECTOR IS UNDEFINED')
            RETURN
          ENDIF
 c
@@ -3198,6 +3196,7 @@ c
 c     Define scaling diagonal matrix for modified Givens usage and
 c     classify equation types.
 c
+      CALL dblepr("Alamda", -1, ALAMDA, 1) ! KS
       ALSQ = ALAMDA**2
       DO 140 I = 1,M
 c
@@ -3424,9 +3423,12 @@ c        determined.  If any are infeasible, it is due to roundoff
 c        error.  Any that are non-positive will be set to zero and
 c        removed from the solution set.
 c
+         CALL intpr("DWNLSM L", -1, 3427, 1)
          DO 240 JCON = L+1,NSOLN
             IF (X(JCON).LE.0.D0) GO TO 250
   240    CONTINUE
+           CALL intpr("DWNLSM L", -1, 3430, 1)
+
          FEASBL = .TRUE.
   250    IF (.NOT.FEASBL) GO TO 200
       ELSE
@@ -3503,6 +3505,7 @@ c
 c        Reduce column NSOLN so that the matrix of nonactive constraints
 c        variables is triangular.
 c
+
          DO 320 J = M,NIV+1,-1
             JP = J - 1
 c
@@ -3581,6 +3584,9 @@ c
 c     Copy right hand side into TEMP vector to use overwriting method.
 c
   330 ISOL = 1
+           CALL intpr("DWNLSM L", -1, 3587, 1)
+           CALL intpr("NIV L", -1, NIV, 1)
+
       IF (NSOLN.GE.ISOL) THEN
          CALL xDCOPY (NIV, W(1,N+1), 1, TEMP, 1)
          DO 340 J = NSOLN,ISOL,-1
@@ -3601,6 +3607,8 @@ c
 c
 c     Solve system.
 c
+           CALL intpr("NSOLN L", -1, 3610, 1)
+           CALL intpr("NSOLN", -1, NSOLN, 1)
       CALL xDCOPY (NSOLN, Z, 1, X, 1)
 c
 c     Apply Householder transformations to X(*) if KRANK.LT.L
