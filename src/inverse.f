@@ -2113,7 +2113,7 @@ c
   100 IF (LINK.GT.1) THEN
          NTIMES = NTIMES + 1
          IF (NTIMES.GT.NOPT) THEN
-       CALL rwarn ('xDLSEI: LINKS IN THE OPTION VECTOR ARE CYCLING')
+          CALL rexit ('xDLSEI:LINKS IN THE OPTION VECTOR ARE CYCLING')
             RETURN
          ENDIF
 c
@@ -2134,7 +2134,7 @@ c
 c
          NEXT = INT(PRGOPT(LINK))
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
-      CALL rwarn ('xDLSEI: THE OPTION VECTOR IS UNDEFINED')
+          CALL rexit ('xDLSEI: THE OPTION VECTOR IS UNDEFINED')
          RETURN
          ENDIF
 c
@@ -2148,8 +2148,8 @@ c
   120 CONTINUE
 c
       IF (COV .AND. MDW.LT.N) THEN
-      CALL rwarn ('xDLSEI: MDW .LT. N WHEN COV MATRIX IS AN ERROR')
-               RETURN
+       CALL rexit ('xDLSEI: MDW .LT. N WHEN COV MATRIX IS AN ERROR')
+       RETURN
       ENDIF
 c
 c     Problem definition and option vector OK.
@@ -2200,8 +2200,9 @@ c
   150 CONTINUE
 c
 c     Save diagonal terms of lower trapezoidal matrix.
-c
-  160 CALL xDCOPY (KRANKE, W, MDW+1, WS(KRANKE+1), 1)
+c KS: changed W -> W(1,1)
+c  160 CALL xDCOPY (KRANKE, W, MDW+1, WS(KRANKE+1), 1)
+  160 CALL xDCOPY (KRANKE, W(1,1), MDW+1, WS(KRANKE+1), 1)
 c
 c     Use Householder transformation from left to achieve
 c     KRANKE by KRANKE upper triangular form.
@@ -2285,9 +2286,9 @@ c
       ENDIF
 c
 c     Replace diagonal terms of lower trapezoidal matrix.
-c
+c KS: REPLACED (, W, MDW+1) by W(1,1), MDW+!
       IF (KRANKE.GT.0) THEN
-         CALL xDCOPY (KRANKE, WS(KRANKE+1), 1, W, MDW+1)
+         CALL xDCOPY (KRANKE, WS(KRANKE+1), 1, W(1, 1), MDW+1)
 c
 c        Reapply transformation to put solution in original coordinates.
 c
