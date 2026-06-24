@@ -2103,7 +2103,9 @@ c
 c
 c     Define bound for positive values of LINK.
 c
-      NLINK = 100000
+!      NLINK = 100000
+      NLINK = LPR  ! KS: lpr is passed from R
+
       LAST = 1
       LINK = INT(PRGOPT(1))
       IF (LINK.EQ.0 .OR. LINK.GT.NLINK) THEN
@@ -3120,8 +3122,7 @@ c
 c
 c     Define bound for positive value of LINK.
 c
-C      NLINK = 100000  ! KS: changed this as nlink is known
-      NLINK = LPR  ! KS: lpr is passed from R
+      NLINK = 100000   
       
       NTIMES = 0
       LAST = 1
