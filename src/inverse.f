@@ -3337,6 +3337,8 @@ c
             CALL xDCOPY (N-JCON, W(I, JCON+1), MDW, W(I, JCON), MDW)
             W(I,N) = T
   210    CONTINUE
+         CALL intpr("DWNLSM L", -1, 3340, 1)
+         CALL intpr("JCON", -1, JCON, 1)
 c
 c        Update permuted index vector to reflect this shift and swap.
 c
@@ -3345,6 +3347,8 @@ c
             IPIVOT(I) = IPIVOT(I+1)
   220    CONTINUE
          IPIVOT(N) = ITEMP
+         
+         CALL intpr("DWNLSM L", -1, 3350, 1)
 c
 c        Similarly permute X(*) vector.
 c
@@ -3352,12 +3356,19 @@ c
          X(N) = 0.D0
          NSOLN = NSOLN - 1
          NIV = NIV - 1
+         CALL intpr("DWNLSM L", -1, 3360, 1)
 c
 c        Retriangularize upper Hessenberg matrix after adding
 c        constraints.
 c
          I = KRANK + JCON - L
+         CALL intpr("DWNLSM L", -1, 3366, 1)
+         CALL intpr("DNSOLN", -1, NSOLN, 1)
+         CALL intpr("I", -1, I, 1)
+         CALL intpr("ITYPE", -1, ITYPE(I), 1)
+         CALL intpr("ITYPE+1", -1, ITYPE(I+1), 1)
          DO 230 J = JCON,NSOLN
+         
             IF (ITYPE(I).EQ.0 .AND. ITYPE(I+1).EQ.0) THEN
 c
 c              Zero IP1 to I in column J
@@ -3369,7 +3380,9 @@ c
                   CALL xDROTM (N+1-J, W(I,J+1), MDW, W(I+1,J+1), MDW,           
      &                        SPARAM)
                ENDIF
+               
             ELSEIF (ITYPE(I).EQ.1 .AND. ITYPE(I+1).EQ.1) THEN
+         CALL intpr("DWNLSM L", -1, 3385, 1)
 c
 c              Zero IP1 to I in column J
 c
