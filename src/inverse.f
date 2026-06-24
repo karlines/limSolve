@@ -158,6 +158,10 @@ C W is Working array with E,A,G   ,F,B,H
 
     
 C CALLING SOLVER!
+         CALL intpr("N", -1, N, 1)
+         CALL intpr("mWs", -1, MWs, 1)
+         CALL intpr("mIP", -1, mIP, 1)
+         CALL intpr("LPR", -1, LPR, 1)
 
         CALL xdLSEI(W,                                                        
      &              MDW,                                                      
@@ -2033,7 +2037,7 @@ c     constraint equations.
 c
 C karline: initialised IMAX to avoid unitialized warning
       IMAX = 0
-      
+
 C      IF (FIRST) DRELPR = D1MACH(4)
       DRELPR = D1MACH(4)
 C      FIRST = .FALSE.
@@ -3217,7 +3221,6 @@ c
 c     Set the solution vector X(*) to zero and the column interchange
 c     matrix to the identity.
 c
-         CALL intpr("DWNLSM L", -1, 3221, 1)
       CALL XDCOPYSC (N, 0.D0, X, 1)
       DO 150 I = 1,N
          IPIVOT(I) = I
@@ -3234,7 +3237,6 @@ c     The arrays IDOPE(*) and DOPE(*) are used to pass
 c     information to DWNLIT().  This was done to avoid
 c     a long calling sequence or the use of COMMON.
 c
-         CALL intpr("DWNLSM L", -1, 3237, 1)
       IDOPE(1) = ME
       IDOPE(2) = NSOLN
       IDOPE(3) = L1
@@ -3283,7 +3285,6 @@ c
             ENDIF
   170    CONTINUE
       ENDIF
-         CALL intpr("DWNLSM L", -1, 3286, 1)
 c
 c     Increment iteration counter and check against maximum number
 c     of iterations.
@@ -3314,7 +3315,6 @@ c
 c
 c     Compute search direction and feasible point
 c
-         CALL intpr("DWNLSM L", -1, 3317, 1)
       IF (HITCON) THEN
 c
 c        To add constraints, use computed ALPHA to interpolate between
@@ -3325,7 +3325,6 @@ c
             X(J) = X(J) + ALPHA*(Z(J)-X(J))
   190    CONTINUE
          FEASBL = .FALSE.
-         CALL intpr("DWNLSM L", -1, 3328, 1)
 c
 c        Remove column JCON and shift columns JCON+1 through N to the
 c        left.  Swap column JCON into the N th position.  This achieves
@@ -3337,8 +3336,6 @@ c
             CALL xDCOPY (N-JCON, W(I, JCON+1), MDW, W(I, JCON), MDW)
             W(I,N) = T
   210    CONTINUE
-         CALL intpr("DWNLSM L", -1, 3340, 1)
-         CALL intpr("JCON", -1, JCON, 1)
 c
 c        Update permuted index vector to reflect this shift and swap.
 c
@@ -4129,7 +4126,8 @@ c   920501  Reformatted the REFERENCES section.  (WRB)
 c***END PROLOGUE  DWNNLS
       INTEGER IWORK(*), L, L1, L2, L3, L4, L5, LIW, LW, MA, MDW, ME,            
      &     MODE, N
-      DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,*), WORK(*), X(*)
+C KARLINE: CHANGED ASSUMED SIZE OF W     
+      DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,N+1), WORK(*), X(*)
 C      CHARACTER(LEN=8) XERN1
 c***FIRST EXECUTABLE STATEMENT  DWNNLS
       MODE = 0
@@ -4139,7 +4137,7 @@ c
          LW = ME + MA + 5*N
          IF (IWORK(1).LT.LW) THEN
 C KARLINE: REMOVED WRITE         
-         CALL rwarn ('LSEI: insufficient storage for work')
+         CALL rwarn ('DWNNLS: insufficient storage for work')
   
 C            WRITE (XERN1, '(I8)') LW
 C            CALL xXERMSG ('SLATEC', 'DWNNLS', 'INSUFFICIENT STORAGE ' //       
@@ -4153,7 +4151,7 @@ c
          LIW = ME + MA + N
          IF (IWORK(2).LT.LIW) THEN
 C KARLINE: REMOVED WRITE         
-         CALL rwarn ('LSEI DWNNLS: insufficient storage')
+         CALL rwarn ('DWNNLS: insufficient storage for iwork')
           MODE = 2
             RETURN
          ENDIF
@@ -4596,6 +4594,7 @@ c      DATA ZERO,ONE /0.0D0,1.0D0/, FAC /0.1D0/
       FAC  = 0.1D0
 c***FIRST EXECUTABLE STATEMENT  DLPDP
       N = N1 + N2
+         CALL intpr("in DLDPDP N", -1, N, 1)
       MODE = 1
       IF (M .GT. 0) GO TO 20
          IF (N .LE. 0) GO TO 10
@@ -4668,6 +4667,12 @@ c              DO NOT CHECK LENGTHS OF WORK ARRAYS IN THIS USAGE OF
 c              DWNNLS( ).
                IS(1) = 0
                IS(2) = 0
+         CALL intpr("in DLDPDP Line 4680 M", -1, M, 1)
+         CALL intpr("in DLDPDP NP1", -1, NP1, 1)
+         CALL intpr("in DLDPDP N2", -1, N2, 1)
+         CALL intpr("in DLDPDP IX", -1, IX, 1)
+         CALL intpr("in DLDPDP IW", -1, IW, 1)
+               
                CALL DWNNLS(WS,NP1,N2,NP1-N2,M,0,PRGOPT,WS(IX),RNORM,            
      &                     MODEW,IS,WS(IW+1))
 c
@@ -4718,6 +4723,11 @@ c              DO NOT CHECK LENGTHS OF WORK ARRAYS IN THIS USAGE OF
 c              DWNNLS( ).
                IS(1) = 0
                IS(2) = 0
+         CALL intpr("in DLDPDP Line 4734 M", -1, M, 1)
+        CALL intpr("in DLDPDP N2", -1, N2, 1)
+
+         CALL intpr("in DLDPDP IX", -1, IX, 1)
+         CALL intpr("in DLDPDP IW", -1, IW, 1)
                CALL DWNNLS(WS,N2+1,0,N2+1,M,0,PRGOPT,WS(IX),RNORM,MODEW,        
      &                     IS,WS(IW+1))
 c
