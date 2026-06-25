@@ -1,6 +1,6 @@
 C Karline: removed the write statement; where they also passed an integer value, 
 C this no long is the case. Each removed statement is preceded by:
-C KARLINE: REMOVED roll from xDCOPY         
+C KARLINE: REMOVED WRITE and XXERMSG
 
 
 C*********************************************************************
@@ -48,13 +48,13 @@ C*********************************************************************
       IF (verbose) THEN 
       SELECT CASE (mode)
       CASE (xLDPNoUnknownsOrEquations)
-       CALL rwarn ("No unknowns or equations")
+       CALL xMESSAGE ("No unknowns or equations")
       CASE (xLDPToomanyIterations)
-       CALL rwarn ("Too many iterations")
+       CALL xMESSAGE ("Too many iterations")
       CASE (xLDPIncompatibleConstraints)
-       CALL rwarn ("Incompatible constraints ")
+       CALL xMESSAGE ("Incompatible constraints ")
       CASE (xLDPUnsolvable       )
-       CALL rwarn ("LDP problem unsolvable")
+       CALL xMESSAGE ("LDP problem unsolvable")
       END SELECT
       ENDIF
 
@@ -99,7 +99,7 @@ C The arrays and dimensions for the mass balance inversion
      &                      X (NUnknowns)                     
 C work arrays
       DOUBLE PRECISION :: W(MDW,NUnknowns+1),WS(mWS)
-      INTEGER          :: IP(mIP)
+      INTEGER          :: IP(mip)
 
       INTEGER          :: I,J,K,MOde,ME, MA, MG,N
       DOUBLE PRECISION :: RNORME, RNORML,ProgOpt(lpr)
@@ -153,22 +153,18 @@ C W is Working array with E,A,G   ,F,B,H
        ENDDO        
       K = K + NConstraints
 
-!      ProgOpt(1) = 1.D0
+c      ProgOpt(1) = 1.D0
 
 
     
 C CALLING SOLVER!
-         CALL intpr("N", -1, N, 1)
-         CALL intpr("mWs", -1, MWs, 1)
-         CALL intpr("mIP", -1, mIP, 1)
-         CALL intpr("LPR", -1, LPR, 1)
 
         CALL xdLSEI(W,                                                        
      &              MDW,                                                      
      &              ME,                                                   
      &              MA,                                                  
      &              MG,                                                  
-     &              N,  mIP, mWS, LPR,                                                  
+     &              N,                                                   
      &              ProgOpt,                                                  
      &              X,                                                        
      &              RNORME,                                                   
@@ -181,17 +177,17 @@ C CALLING SOLVER!
       IF (verbose) THEN
        SELECT CASE (Mode) 
        CASE(1)
-           CALL rwarn ("LSEI error: equalities contradictory")
+           CALL XMESSAGE ("LSEI error: equalities contradictory")
 
        CASE(2)
-           CALL rwarn ("LSEI error: inequalities contradictory")
+           CALL XMESSAGE ("LSEI error: inequalities contradictory")
 
        CASE(3)
-           CALL rwarn                                                  
+           CALL XMESSAGE                                                  
      &    ("LSEI error: equalities + inequalities contradictory")
 
        CASE(4)
-           CALL rwarn("LSEI error: wrong input")       
+           CALL XMESSAGE("LSEI error: wrong input")       
        END SELECT
       ENDIF
       IsError = .FALSE.
@@ -229,6 +225,8 @@ C MAIN ROUTINES ARE xLDP
 C xLSEI and  xdbocls
 C 
 C######################################################################
+
+
 
 C<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<C
 C<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<C
@@ -588,7 +586,7 @@ C
       IF (ITER .gt. ITMAX) then
          MODE=3
 C         write (*,'(/a)') ' NNLS quitting on iteration count.'
-      CALL rwarn ('error in LDP - NNLS quitting on iteration count.')
+      CALL XMESSAGE ('error in LDP - NNLS quitting on iteration count.')
          GO TO 350 
       endif
 C   
@@ -978,22 +976,16 @@ C   890831  REVISION DATE from Version 3.2
 C   891214  Prologue converted to Version 4.0 format.  (BAB)
 C   920501  Reformatted the REFERENCES section.  (WRB)
 C***END PROLOGUE  xDNRM2
-C karline: remove DATA and SAVE 
       INTEGER NEXT, N,NN,INCX,I,J
       DOUBLE PRECISION DX(*), CUTLO, CUTHI, HITEST, SUM, XMAX, ZERO,       
      &                 ONE
-!      SAVE CUTLO, CUTHI, ZERO, ONE   KARLINE - REMOVED
-!      DATA ZERO, ONE /0.0D0, 1.0D0/  KARLINE - REMOVED
-      ZERO = 0.D0
-      ONE  = 1.0D0
-      
+      SAVE CUTLO, CUTHI, ZERO, ONE
+      DATA ZERO, ONE /0.0D0, 1.0D0/
 C
-!      DATA CUTLO, CUTHI /8.232D-11,  1.304D19/ KARLINE - REMOVED
-      CUTLO = 8.232D-11
-      CUTHI = 1.304D19
+      DATA CUTLO, CUTHI /8.232D-11,  1.304D19/
       
 C Karline: initialised xmax, to avoid uninitialized warning
-      XMAX = ZERO
+            XMAX = ZERO
 
 C***FIRST EXECUTABLE STATEMENT  xDNRM2
       IF (N .GT. 0) GO TO 10
@@ -1435,7 +1427,7 @@ C
 C     COPIES A VECTOR, X, TO A VECTOR, Y.
 C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
 C     JACK DONGARRA, LINPACK, 3/11/78.
-C karline: simplified the subroutine - removed unrolled loops
+C
       DOUBLE PRECISION DX(*),DY(*)
       INTEGER I,INCX,INCY,IX,IY,M,MP1,N
 C
@@ -1460,27 +1452,23 @@ C        CODE FOR BOTH INCREMENTS EQUAL TO 1
 C
 C
 C        CLEAN-UP LOOP
-C karline: this part added
-   20 DO I = 1, N
+C
+   20 M = MOD(N,7)
+      IF( M .EQ. 0 ) GO TO 40
+      DO 30 I = 1,M
         DY(I) = DX(I)
-      END DO
-! karline: this part removed      
-!   20 M = MOD(N,7)
-!      IF( M .EQ. 0 ) GO TO 40
-!      DO 30 I = 1,M
-!        DY(I) = DX(I)
-!   30 CONTINUE
-!      IF( N .LT. 7 ) RETURN
-!   40 MP1 = M + 1
-!      DO 50 I = MP1,N,7
-!        DY(I) = DX(I)
-!        DY(I + 1) = DX(I + 1)
-!        DY(I + 2) = DX(I + 2)
-!        DY(I + 3) = DX(I + 3)
-!        DY(I + 4) = DX(I + 4)
-!        DY(I + 5) = DX(I + 5)
-!        DY(I + 6) = DX(I + 6)
-!   50 CONTINUE
+   30 CONTINUE
+      IF( N .LT. 7 ) RETURN
+   40 MP1 = M + 1
+      DO 50 I = MP1,N,7
+        DY(I) = DX(I)
+        DY(I + 1) = DX(I + 1)
+        DY(I + 2) = DX(I + 2)
+        DY(I + 3) = DX(I + 3)
+        DY(I + 4) = DX(I + 4)
+        DY(I + 5) = DX(I + 5)
+        DY(I + 6) = DX(I + 6)
+   50 CONTINUE
       RETURN
       END
 
@@ -1548,18 +1536,18 @@ C-----------------------------------------------------------------------
       DOUBLE PRECISION U, COMP
       DOUBLE PRECISION :: Prec(4)  
       LOGICAL          :: First(4) 
-C      SAVE Prec, FIRST
-C      DATA FIRST /.TRUE.,.TRUE.,.TRUE.,.TRUE./
-C      DATA Prec /1.D-8,1.D-8,1.D-8,1.D-8/
+      SAVE Prec, FIRST
+      DATA FIRST /.TRUE.,.TRUE.,.TRUE.,.TRUE./
+      DATA Prec /1.D-8,1.D-8,1.D-8,1.D-8/
 
 
       IF (Idum > 4 .OR. Idum < 0) THEN
 C         Write (*,*) "Error in function D1MACH"
 C         Write (*,*) "NOT DEFINED FOR IDUM = ", Idum
-       CALL rexit("Error in function D1MACH-NOT DEFINED FOR IDUM  ") 
+       CALL XMESSAGE("Error in function D1MACH-NOT DEFINED FOR IDUM  ") 
       ENDIF
 
-C      IF (First(Idum)) THEN 
+      IF (First(Idum)) THEN 
 C Karline: to avoid uninitialised warning
        D1MACH = 1.D300
        First(Idum) = .FALSE.
@@ -1578,17 +1566,18 @@ C Unit roundoff
          IF (COMP .NE. 1.0D0) GO TO 10
          D1MACH = U*2.0D0
         CASE Default
-
-         CALL rexit("Error in function D1MACH-NOT DEFINED FOR IDUM ")
+C         Write (*,*) "Error in function D1MACH"
+C         Write (*,*) "NOT DEFINED FOR IDUM = ", Idum
+         CALL XMESSAGE("Error in function D1MACH-NOT DEFINED FOR IDUM ")
        END SELECT
 
-C       PREC (Idum) = D1MACH
+       PREC (Idum) = D1MACH
 
-C      ELSE
+      ELSE
 
-C       D1mach = Prec(IDUM)
+       D1mach = Prec(IDUM)
 
-C      ENDIF
+      ENDIF
 
       RETURN
 
@@ -1620,11 +1609,9 @@ c                !>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>!
 c                !>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>!
 
 
-c   LINPACK routine KARLINE: added mIP, mWS, LPR
-c xXERMSG removed
+c   LINPACK routine
 
-      SUBROUTINE xDLSEI (W, MDW, ME, MA, MG, N, mIP, mWS, LPR,                  
-     &  PRGOPT, X, RNORME,       
+      SUBROUTINE xDLSEI (W, MDW, ME, MA, MG, N, PRGOPT, X, RNORME,       
      &   RNORML, MODE, WS, IP)
 c***BEGIN PROLOGUE  xDLSEI
 c***PURPOSE  Solve a linearly constrained least squares problem with
@@ -1996,26 +1983,23 @@ c               R. J. Hanson and K. H. Haskell, Two algorithms for the
 c                 linearly constrained least squares problem, ACM
 c                 Transactions on Mathematical Software, September 1982.
 c***ROUTINES CALLED  D1MACH, xDASUM, xDAXPY, xDCOPY, xDDOT, xDH12, DLSI,
-c                    xDNRM2, xDSCAL, xDSWAP, xXERMSG
+c                    xDNRM2, xDSCAL, xDSWAP !, xXERMSG
 c***REVISION HISTORY  (YYMMDD)
 c   790701  DATE WRITTEN
 c   890531  Changed all specific intrinsics to generic.  (WRB)
 c   890618  Completely restructured and extensively revised (WRB & RWC)
 c   890831  REVISION DATE from Version 3.2
 c   891214  Prologue converted to Version 4.0 format.  (BAB)
-c   900315  CALLs to XERROR changed to CALLs to xXERMSG.  (THJ)
+c   900315  CALLs to XERROR changed to CALLs to xXERMSG.  (THJ) -> rexit (KS)
 c   900510  Convert XERRWV calls to xXERMSG calls.  (RWC)
 c   900604  DP version created from SP version.  (RWC)
 c   920501  Reformatted the REFERENCES section.  (WRB)
 c***END PROLOGUE  xDLSEI
-C KARLINE: CHANGED IP(3) INTO IP(*) ???? - added mIP, mWS, LPR
-      INTEGER mIP, mWS, LPR 
-      INTEGER IP(mIP), MA, MDW, ME, MG, MODE, N
-      DOUBLE PRECISION PRGOPT(LPR),RNORME,RNORML
-      DOUBLE PRECISION W(MDW,*),WS(mWS),X(*)
+      INTEGER IP(3), MA, MDW, ME, MG, MODE, N
+      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,*), WS(*), X(*)
 c
       EXTERNAL D1MACH, xDASUM, xDAXPY, xDCOPY,xDDOT,xDH12,DLSI,xDNRM2,           
-     &   xDSCAL, xDSWAP
+     &   xDSCAL, xDSWAP !, xXERMSG
       DOUBLE PRECISION D1MACH, xDASUM, xDDOT, xDNRM2
 c KARLINE: 
       DOUBLE PRECISION DRELPR, ENORM, FNORM, GAM, RB, RN, RNMAX, SIZE,           
@@ -2025,9 +2009,9 @@ c KARLINE:
      &   NTIMES
       LOGICAL COV, FIRST
 C      CHARACTER(LEN=8) XERN1, XERN2, XERN3, XERN4
-C      SAVE FIRST, DRELPR
+      SAVE FIRST, DRELPR
 c
-C      DATA FIRST /.TRUE./
+      DATA FIRST /.TRUE./
 c***FIRST EXECUTABLE STATEMENT  xDLSEI
 c
 c     Set the nominal tolerance used in the code for the equality
@@ -2035,32 +2019,34 @@ c     constraint equations.
 c
 C karline: initialised IMAX to avoid unitialized warning
       IMAX = 0
-
-C      IF (FIRST) DRELPR = D1MACH(4)
-      DRELPR = D1MACH(4)
-C      FIRST = .FALSE.
+      
+      IF (FIRST) DRELPR = D1MACH(4)
+      FIRST = .FALSE.
       TAU = SQRT(DRELPR)
 c
 c     Check that enough storage was allocated in WS(*) and IP(*).
 c
       MODE = 4
       IF (MIN(N,ME,MA,MG) .LT. 0) THEN
-         CALL rexit ('LSEI: THE VARIABLES N, ME, MA, MG MUST BE>0')
+         CALL rexit ('LSEI: THE VARIABLES N, ME,MA, MG MUST BE>0')
+         RETURN
       ENDIF
 c
       IF (IP(1).GT.0) THEN
          LCHK = 2*(ME+N) + MAX(MA+MG,N) + (MG+2)*(N+7)
          IF (IP(1).LT.LCHK) THEN
-           CALL rexit ('LSEI: insufficient storage for WS')
-         RETURN
+C KARLINE: REMOVED WRITE         
+         CALL rexit ('LSEI: insufficient storage')
+            RETURN
          ENDIF
       ENDIF
 c
       IF (IP(2).GT.0) THEN
          LCHK = MG + 2*N + 2
          IF (IP(2).LT.LCHK) THEN
-           CALL rexit ('LSEI: insufficient storage for IP')
-         RETURN
+C KARLINE: REMOVED WRITE         
+         CALL rexit ('LSEI: insufficient storage')
+            RETURN
          ENDIF
       ENDIF
 c
@@ -2075,9 +2061,9 @@ c
          RETURN
       ENDIF
 c
-      IF (MDW.LT.M) THEN 
-        CALL rexit('xDLSEI: MDW .LT. ME+MA+MG IS AN ERROR')
-        RETURN
+      IF (MDW.LT.M) THEN
+      call rexit('xDLSEI, MDW.LT.ME+MA+MG IS AN ERROR')
+         RETURN
       ENDIF
 c
       NP1 = N + 1
@@ -2104,20 +2090,18 @@ c
 c
 c     Define bound for positive values of LINK.
 c
-!      NLINK = 100000
-      NLINK = LPR  ! KS: lpr is passed from R
-
+      NLINK = 100000
       LAST = 1
       LINK = INT(PRGOPT(1))
       IF (LINK.EQ.0 .OR. LINK.GT.NLINK) THEN
-      CALL rexit ('xDLSEI: THE OPTION VECTOR IS UNDEFINED')
+        CALL rexit('xDLSEI,THE OPTION VECTOR IS UNDEFINED')      
          RETURN
       ENDIF
 c
   100 IF (LINK.GT.1) THEN
          NTIMES = NTIMES + 1
          IF (NTIMES.GT.NOPT) THEN
-          CALL rexit ('xDLSEI:LINKS IN THE OPTION VECTOR ARE CYCLING')
+         call rexit("xDLSEI, LINKS IN THE OPTION VECTOR ARE CYCLING")
             RETURN
          ENDIF
 c
@@ -2138,8 +2122,8 @@ c
 c
          NEXT = INT(PRGOPT(LINK))
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
-          CALL rexit ('xDLSEI: THE OPTION VECTOR IS UNDEFINED')
-         RETURN
+         call rexit("xDLSEI, OPTION VECTOR IS UNDEFINED")
+            RETURN
          ENDIF
 c
          LAST = LINK
@@ -2152,8 +2136,8 @@ c
   120 CONTINUE
 c
       IF (COV .AND. MDW.LT.N) THEN
-       CALL rexit ('xDLSEI: MDW .LT. N WHEN COV MATRIX IS AN ERROR')
-       RETURN
+         call rexit("xDLSEI, MDW < N WHEN COV MATRIX NEEDED IS ERROR")
+         RETURN
       ENDIF
 c
 c     Problem definition and option vector OK.
@@ -2204,9 +2188,8 @@ c
   150 CONTINUE
 c
 c     Save diagonal terms of lower trapezoidal matrix.
-c KS: changed W -> W(1,1)
-c  160 CALL xDCOPY (KRANKE, W, MDW+1, WS(KRANKE+1), 1)
-  160 CALL xDCOPY (KRANKE, W(1,1), MDW+1, WS(KRANKE+1), 1)
+c
+  160 CALL xDCOPY (KRANKE, W, MDW+1, WS(KRANKE+1), 1)
 c
 c     Use Householder transformation from left to achieve
 c     KRANKE by KRANKE upper triangular form.
@@ -2251,11 +2234,7 @@ c     Move reduced problem data upward if KRANKE.LT.ME.
 c
       IF (KRANKE.LT.ME) THEN
          DO 200 J = 1,NP1
-!            CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
-
-           DO K = 1, M - ME
-              W(KRANKE+K,J) = W(ME+K,J)
-           END DO
+            CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
   200    CONTINUE
       ENDIF
 c
@@ -2290,9 +2269,9 @@ c
       ENDIF
 c
 c     Replace diagonal terms of lower trapezoidal matrix.
-c KS: REPLACED (, W, MDW+1) by W(1,1), MDW+!
+c
       IF (KRANKE.GT.0) THEN
-         CALL xDCOPY (KRANKE, WS(KRANKE+1), 1, W(1, 1), MDW+1)
+         CALL xDCOPY (KRANKE, WS(KRANKE+1), 1, W, MDW+1)
 c
 c        Reapply transformation to put solution in original coordinates.
 c
@@ -2426,16 +2405,15 @@ c
      &   MDLPDP, MINMAN, N1, N2, N3, NEXT, NP1, MDB 
       LOGICAL COV, FIRST, SCLCOV
 c
-C      SAVE DRELPR, FIRST
-C      DATA FIRST /.TRUE./
+      SAVE DRELPR, FIRST
+      DATA FIRST /.TRUE./
 c
 c***FIRST EXECUTABLE STATEMENT  DLSI
 c
 c     Set the nominal tolerance used in the code.
 c
-C      IF (FIRST) DRELPR = D1MACH(4)
-       DRELPR = D1MACH(4)
-C      FIRST = .FALSE.
+      IF (FIRST) DRELPR = D1MACH(4)
+      FIRST = .FALSE.
       TOL = SQRT(DRELPR)
 c
       MODE = 0
@@ -2533,8 +2511,6 @@ c
 c        Solve the reduced problem with DLPDP algorithm,
 c        the least projected distance problem.
 c
-         CALL intpr("L2538 MAP1", -1, MAP1, 1)
-
          CALL DLPDP(W(MAP1,1), MDW, MG, KRANK, N-KRANK, PRGOPT, X,             
      &             XNORM, MDLPDP, WS(N2), IP(N+1))
 c
@@ -3057,13 +3033,13 @@ c                                       (A)
 c
 c***SEE ALSO  DWNNLS
 c***ROUTINES CALLED  D1MACH, xDASUM, xDAXPY, xDCOPY, xDH12, xDNRM2, xDROTM,
-c                    xDROTMG, xDSCAL, xDSWAP, DWNLIT, xIDAMAX, xXERMSG
+c                    xDROTMG, xDSCAL, xDSWAP, DWNLIT, xIDAMAX !, xXERMSG
 c***REVISION HISTORY  (YYMMDD)
 c   790701  DATE WRITTEN
 c   890531  Changed all specific intrinsics to generic.  (WRB)
 c   890618  Completely restructured and revised.  (WRB & RWC)
 c   891214  Prologue converted to Version 4.0 format.  (BAB)
-c   900315  CALLs to XERROR changed to CALLs to xXERMSG.  (THJ) -> rwarn (KS)
+c   900315  CALLs to XERROR changed to CALLs to xXERMSG.  (THJ)
 c   900328  Added TYPE section.  (WRB)
 c   900510  Fixed an error message.  (RWC)
 c   900604  DP version created from SP version.  (RWC)
@@ -3074,7 +3050,7 @@ c***END PROLOGUE  DWNLSM
      &   W(MDW,*), WD(*), X(*), Z(*)
 c
       EXTERNAL D1MACH,xDASUM,xDAXPY,xDCOPY,xDH12,xDNRM2,xDROTM,xDROTMG,         
-     &   xDSCAL, xDSWAP, DWNLIT, xIDAMAX 
+     &   xDSCAL, xDSWAP, DWNLIT, xIDAMAX !, xXERMSG
       DOUBLE PRECISION D1MACH, xDASUM, xDNRM2
       INTEGER xIDAMAX
 c
@@ -3086,17 +3062,16 @@ c
      &   NOPT, NSOLN, NTIMES
       LOGICAL DONE, FEASBL, FIRST, HITCON, POS
 c
-C      SAVE DRELPR, FIRST
-C      DATA FIRST /.TRUE./
+      SAVE DRELPR, FIRST
+      DATA FIRST /.TRUE./
 c***FIRST EXECUTABLE STATEMENT  DWNLSM
 c
 c     Initialize variables.
 c     DRELPR is the precision for the particular machine
 c     being used.  This logic avoids resetting it every entry.
 c
-C      IF (FIRST) DRELPR = D1MACH(4)
-       DRELPR = D1MACH(4)
-C      FIRST = .FALSE.
+      IF (FIRST) DRELPR = D1MACH(4)
+      FIRST = .FALSE.
 c
 c     Set the nominal tolerance used in the code.
 c
@@ -3125,20 +3100,19 @@ c
 c
 c     Define bound for positive value of LINK.
 c
-      NLINK = 100000   
-      
+      NLINK = 100000
       NTIMES = 0
       LAST = 1
       LINK = INT(PRGOPT(1))
       IF (LINK.LE.0 .OR. LINK.GT.NLINK) THEN
-      CALL rwarn ('DWNLSM:THE OPTION VECTOR IS UNDEFINED')
+        CALL rexit("DWNNLS: OPTION VECTOR IS UNDEFINED")      
          RETURN
       ENDIF
 c
   100 IF (LINK.GT.1) THEN
          NTIMES = NTIMES + 1
          IF (NTIMES.GT.NOPT) THEN
-         CALL rexit('DWNLSM: LINKS IN THE OPTION VECTOR ARE CYCLING')
+           CALL rexit("DWNNLS,LINKS IN THE OPTION VECTOR ARE CYCLING")         
             RETURN
          ENDIF
 c
@@ -3157,8 +3131,8 @@ c
 c
          NEXT = INT(PRGOPT(LINK))
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
-           CALL rexit ('DWNLSM: THE OPTION VECTOR IS UNDEFINED')
-           RETURN
+           CALL rexit('DWNNLS, THE OPTION VECTOR IS UNDEFINED')
+            RETURN
          ENDIF
 c
          LAST = LINK
@@ -3200,7 +3174,6 @@ c
 c     Define scaling diagonal matrix for modified Givens usage and
 c     classify equation types.
 c
-      CALL dblepr("Alamda", -1, ALAMDA, 1) ! KS
       ALSQ = ALAMDA**2
       DO 140 I = 1,M
 c
@@ -3344,12 +3317,10 @@ c
             IPIVOT(I) = IPIVOT(I+1)
   220    CONTINUE
          IPIVOT(N) = ITEMP
-         
 c
 c        Similarly permute X(*) vector.
 c
          CALL xDCOPY (N-JCON, X(JCON+1), 1, X(JCON), 1)
-         CALL intpr("DWNLSM L", -1, 3354, 1)
          X(N) = 0.D0
          NSOLN = NSOLN - 1
          NIV = NIV - 1
@@ -3359,7 +3330,6 @@ c        constraints.
 c
          I = KRANK + JCON - L
          DO 230 J = JCON,NSOLN
-         
             IF (ITYPE(I).EQ.0 .AND. ITYPE(I+1).EQ.0) THEN
 c
 c              Zero IP1 to I in column J
@@ -3371,7 +3341,6 @@ c
                   CALL xDROTM (N+1-J, W(I,J+1), MDW, W(I+1,J+1), MDW,           
      &                        SPARAM)
                ENDIF
-               
             ELSEIF (ITYPE(I).EQ.1 .AND. ITYPE(I+1).EQ.1) THEN
 c
 c              Zero IP1 to I in column J
@@ -3434,7 +3403,6 @@ c
          DO 240 JCON = L+1,NSOLN
             IF (X(JCON).LE.0.D0) GO TO 250
   240    CONTINUE
-
          FEASBL = .TRUE.
   250    IF (.NOT.FEASBL) GO TO 200
       ELSE
@@ -3511,7 +3479,6 @@ c
 c        Reduce column NSOLN so that the matrix of nonactive constraints
 c        variables is triangular.
 c
-
          DO 320 J = M,NIV+1,-1
             JP = J - 1
 c
@@ -4106,8 +4073,7 @@ c   920501  Reformatted the REFERENCES section.  (WRB)
 c***END PROLOGUE  DWNNLS
       INTEGER IWORK(*), L, L1, L2, L3, L4, L5, LIW, LW, MA, MDW, ME,            
      &     MODE, N
-C KARLINE: CHANGED ASSUMED SIZE OF W     
-      DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,N+1), WORK(*), X(N)
+      DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,*), WORK(*), X(*)
 C      CHARACTER(LEN=8) XERN1
 c***FIRST EXECUTABLE STATEMENT  DWNNLS
       MODE = 0
@@ -4117,7 +4083,7 @@ c
          LW = ME + MA + 5*N
          IF (IWORK(1).LT.LW) THEN
 C KARLINE: REMOVED WRITE         
-           CALL rexit ('DWNNLS: insufficient storage for work')
+         CALL rexit ('DWNNLS: insufficient storage for WORK')
             MODE = 2
             RETURN
          ENDIF
@@ -4128,19 +4094,19 @@ c
          IF (IWORK(2).LT.LIW) THEN
 C KARLINE: REMOVED WRITE         
          CALL rexit ('DWNNLS: insufficient storage for iwork')
-          MODE = 2
+            MODE = 2
             RETURN
          ENDIF
       ENDIF
 c
       IF (MDW.LT.ME+MA) THEN
-         CALL rexit ('DWNNLS: THE VALUE MDW.LT.ME+MA IS AN ERROR')
+         CALL rexit ('DWNNLS, THE VALUE MDW.LT.ME+MA IS AN ERROR')
          MODE = 2
          RETURN
       ENDIF
 c
       IF (L.LT.0 .OR. L.GT.N) THEN
-         CALL rexit ('DWNNLS: L.GE.0 .AND. L.LE.N IS REQUIRED')
+         CALL rexit ('DWNNLS,  L.GE.0 .AND. L.LE.N IS REQUIRED')
          MODE = 2
          RETURN
       ENDIF
@@ -4185,10 +4151,7 @@ c
      & DPARAM,DY,W,ZERO
       INTEGER N,INCX,INCY,NSTEPS,I,KX,KY
       DIMENSION DX(*),DY(*),DPARAM(5)
-c      DATA ZERO,TWO/0.D0,2.D0/   KARLINE: REMOVED
-       ZERO = 0.D0
-       TWO  = 2.D0
-
+      DATA ZERO,TWO/0.D0,2.D0/
 c
       DFLAG=DPARAM(1)
       IF(N .LE. 0 .OR.(DFLAG+TWO.EQ.ZERO)) GO TO 140
@@ -4321,15 +4284,8 @@ c
       INTEGER IGO
       DIMENSION DPARAM(5)
 c
-c     DATA ZERO,ONE,TWO /0.D0,1.D0,2.D0/          KARLINE: removed this
-c      DATA GAM,GAMSQ,RGAMSQ/4096.D0,16777216.D0,5.9604645D-8/
-      ZERO = 0.D0 
-      ONE  = 1.D0
-      TWO  = 2.D0
-      GAM  = 4096.D0
-      GAMSQ = 16777216.D0
-      RGAMSQ = 5.9604645D-8
-
+      DATA ZERO,ONE,TWO /0.D0,1.D0,2.D0/
+      DATA GAM,GAMSQ,RGAMSQ/4096.D0,16777216.D0,5.9604645D-8/
 C Karline: initialized DH.. to avoid uninitialized warning
           DH11=ZERO
           DH12=ZERO
@@ -4563,11 +4519,8 @@ c
      &     NP1
       DOUBLE PRECISION A(MDA,*), xDDOT, xDNRM2, FAC, ONE,                       
      &     PRGOPT(*), RNORM, SC, WNORM, WS(*), X(*), YNORM, ZERO
-c      SAVE ZERO, ONE, FAC                          KARLINE: REMOVED
-c      DATA ZERO,ONE /0.0D0,1.0D0/, FAC /0.1D0/    
-      ZERO = 0.0D0
-      ONE  = 1.0D0
-      FAC  = 0.1D0
+      SAVE ZERO, ONE, FAC
+      DATA ZERO,ONE /0.0D0,1.0D0/, FAC /0.1D0/
 c***FIRST EXECUTABLE STATEMENT  DLPDP
       N = N1 + N2
       MODE = 1
@@ -4642,7 +4595,6 @@ c              DO NOT CHECK LENGTHS OF WORK ARRAYS IN THIS USAGE OF
 c              DWNNLS( ).
                IS(1) = 0
                IS(2) = 0
-
                CALL DWNNLS(WS,NP1,N2,NP1-N2,M,0,PRGOPT,WS(IX),RNORM,            
      &                     MODEW,IS,WS(IW+1))
 c
@@ -4693,11 +4645,6 @@ c              DO NOT CHECK LENGTHS OF WORK ARRAYS IN THIS USAGE OF
 c              DWNNLS( ).
                IS(1) = 0
                IS(2) = 0
-         CALL intpr("in DLDPDP Line 4734 M", -1, M, 1)
-        CALL intpr("in DLDPDP N2", -1, N2, 1)
-
-         CALL intpr("in DLDPDP IX", -1, IX, 1)
-         CALL intpr("in DLDPDP IW", -1, IW, 1)
                CALL DWNNLS(WS,N2+1,0,N2+1,M,0,PRGOPT,WS(IX),RNORM,MODEW,        
      &                     IS,WS(IW+1))
 c
@@ -5000,7 +4947,7 @@ c                       are not generally required by the user.
 c
 c***REFERENCES  C. L. Lawson and R. J. Hanson, Solving Least Squares
 c                 Problems, Prentice-Hall, Inc., 1974, Chapter 14.
-c***ROUTINES CALLED  D1MACH, xDH12 
+c***ROUTINES CALLED  D1MACH, xDH12, xXERMSG
 c***REVISION HISTORY  (YYMMDD)
 c   790101  DATE WRITTEN
 c   890531  Changed all specific intrinsics to generic.  (WRB)
@@ -5016,12 +4963,11 @@ c***END PROLOGUE  xDHFTI
       DOUBLE PRECISION A, B, D1MACH, DZERO, FACTOR,                             
      &     G, H, HMAX, RELEPS, RNORM, SM, SM1, SZERO, TAU, TMP
       DIMENSION A(MDA,*),B(MDB,*),H(*),G(*),RNORM(*)
-C      SAVE RELEPS
-C      DATA RELEPS /0.D0/
+      SAVE RELEPS
+      DATA RELEPS /0.D0/
 c     BEGIN BLOCK PERMITTING ...EXITS TO 360
 c***FIRST EXECUTABLE STATEMENT  xDHFTI
-C         IF (RELEPS.EQ.0.D0) RELEPS = D1MACH(4)
-         RELEPS = D1MACH(4)
+         IF (RELEPS.EQ.0.D0) RELEPS = D1MACH(4)
          SZERO = 0.0D0
          DZERO = 0.0D0
          FACTOR = 0.001D0
@@ -5034,8 +4980,7 @@ c              BEGIN BLOCK PERMITTING ...EXITS TO 120
                   IF (MDA .GE. M) GO TO 10
                      NERR = 1
                      IOPT = 2
-         CALL rwarn("xDHFTI: MDA.LT.M, PROBABLE ERROR.")
-
+      CALL rexit('xDHFTI MDA.LT.M, PROBABLE ERROR.')
 c     ...............EXIT
                      GO TO 360
    10             CONTINUE
@@ -5043,8 +4988,7 @@ c
                   IF (NB .LE. 1 .OR. MAX(M,N) .LE. MDB) GO TO 20
                      NERR = 2
                      IOPT = 2
-         CALL rwarn("xDHFTI: MDB.LT.MAX(M,N).AND.NB.GT.1. IS ERROR.")
-
+         CALL rexit ('xDHFTI, MDB.LT.MAX(M,N).AND.NB.GT.1. IS ERROR.')
 c     ...............EXIT
                      GO TO 360
    20             CONTINUE
