@@ -1,6 +1,6 @@
 C Karline: removed the write statement; where they also passed an integer value, 
 C this no long is the case. Each removed statement is preceded by:
-C KARLINE: REMOVED WRITE and XXERMSG
+C KARLINE: REMOVED WRITE, XXERMSG, XMESSAGE -> rwarn or rexit
 
 
 C*********************************************************************
@@ -48,13 +48,13 @@ C*********************************************************************
       IF (verbose) THEN 
       SELECT CASE (mode)
       CASE (xLDPNoUnknownsOrEquations)
-       CALL xMESSAGE ("No unknowns or equations")
+       CALL rwarn ("No unknowns or equations")
       CASE (xLDPToomanyIterations)
-       CALL xMESSAGE ("Too many iterations")
+       CALL rwarn ("Too many iterations")
       CASE (xLDPIncompatibleConstraints)
-       CALL xMESSAGE ("Incompatible constraints ")
+       CALL rwarn ("Incompatible constraints ")
       CASE (xLDPUnsolvable       )
-       CALL xMESSAGE ("LDP problem unsolvable")
+       CALL rwarn ("LDP problem unsolvable")
       END SELECT
       ENDIF
 
@@ -177,17 +177,17 @@ C CALLING SOLVER!
       IF (verbose) THEN
        SELECT CASE (Mode) 
        CASE(1)
-           CALL XMESSAGE ("LSEI error: equalities contradictory")
+           CALL rwarn ("LSEI error: equalities contradictory")
 
        CASE(2)
-           CALL XMESSAGE ("LSEI error: inequalities contradictory")
+           CALL rwarn ("LSEI error: inequalities contradictory")
 
        CASE(3)
-           CALL XMESSAGE                                                  
+           CALL rwarn                                                  
      &    ("LSEI error: equalities + inequalities contradictory")
 
        CASE(4)
-           CALL XMESSAGE("LSEI error: wrong input")       
+           CALL rwarn("LSEI error: wrong input")       
        END SELECT
       ENDIF
       IsError = .FALSE.
@@ -195,23 +195,6 @@ C CALLING SOLVER!
       RETURN
 
       END SUBROUTINE LSEI
-
-
-C                c<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<c
-C                c<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<c
-C                c            ERROR HANDLING          c
-C                c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>c
-C                c>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>c
-
-
-      SUBROUTINE XMESSAGE (String)
-
-      CHARACTER (LEN=*)   :: String
-
-C Check whether it is safe to write
-        CALL rwarn(String)
-
-      END SUBROUTINE XMESSAGE
 
 
 
@@ -242,7 +225,7 @@ C  "SOLVING LEAST SQUARES PROBLEMS", Prentice-HalL, 1974.
 C  Revised FEB 1995 to accompany reprinting of the book by SIAM.
 C  made compatible with fortran 95 by karline Soetaert
 C  added x-prefix
-C  captured writing to screen -> XMESSAGE
+C  captured writing to screen -> rwarn
 
 C*************************************************************************C
 C LEAST DISTANCE SUBROUTINE
@@ -586,7 +569,7 @@ C
       IF (ITER .gt. ITMAX) then
          MODE=3
 C         write (*,'(/a)') ' NNLS quitting on iteration count.'
-      CALL XMESSAGE ('error in LDP - NNLS quitting on iteration count.')
+      CALL rexit ('error in LDP - NNLS quitting on iteration count.')
          GO TO 350 
       endif
 C   
@@ -979,10 +962,8 @@ C***END PROLOGUE  xDNRM2
       INTEGER NEXT, N,NN,INCX,I,J
       DOUBLE PRECISION DX(*), CUTLO, CUTHI, HITEST, SUM, XMAX, ZERO,       
      &                 ONE
-      SAVE CUTLO, CUTHI, ZERO, ONE
-      DATA ZERO, ONE /0.0D0, 1.0D0/
-C
-      DATA CUTLO, CUTHI /8.232D-11,  1.304D19/
+      PARAMETER(ZERO  = 0.0D0, ONE = 1.0D0, 
+     &          CUTLO = 8.232D-11, CUTHI =  1.304D19)
       
 C Karline: initialised xmax, to avoid uninitialized warning
             XMAX = ZERO
@@ -1535,22 +1516,21 @@ C Subroutines/functions called by D1MACH.. None
 C-----------------------------------------------------------------------
       DOUBLE PRECISION U, COMP
       DOUBLE PRECISION :: Prec(4)  
-      LOGICAL          :: First(4) 
-      SAVE Prec, FIRST
-      DATA FIRST /.TRUE.,.TRUE.,.TRUE.,.TRUE./
-      DATA Prec /1.D-8,1.D-8,1.D-8,1.D-8/
+c karline: toggled off the SAVE statement - now always calculaetd
+c      LOGICAL          :: First(4) 
+c      SAVE Prec, FIRST
+c      DATA FIRST /.TRUE.,.TRUE.,.TRUE.,.TRUE./
+c      DATA Prec /1.D-8,1.D-8,1.D-8,1.D-8/
 
 
       IF (Idum > 4 .OR. Idum < 0) THEN
-C         Write (*,*) "Error in function D1MACH"
-C         Write (*,*) "NOT DEFINED FOR IDUM = ", Idum
-       CALL XMESSAGE("Error in function D1MACH-NOT DEFINED FOR IDUM  ") 
+       CALL rexit("Error in function D1MACH-NOT DEFINED FOR IDUM  ") 
       ENDIF
 
-      IF (First(Idum)) THEN 
+c      IF (First(Idum)) THEN 
 C Karline: to avoid uninitialised warning
        D1MACH = 1.D300
-       First(Idum) = .FALSE.
+c       First(Idum) = .FALSE.
 
        SELECT CASE (IDUM)
 
@@ -1568,16 +1548,16 @@ C Unit roundoff
         CASE Default
 C         Write (*,*) "Error in function D1MACH"
 C         Write (*,*) "NOT DEFINED FOR IDUM = ", Idum
-         CALL XMESSAGE("Error in function D1MACH-NOT DEFINED FOR IDUM ")
+         CALL rexit("Error in function D1MACH-NOT DEFINED FOR IDUM ")
        END SELECT
 
        PREC (Idum) = D1MACH
 
-      ELSE
+c      ELSE
 
-       D1mach = Prec(IDUM)
+c       D1mach = Prec(IDUM)
 
-      ENDIF
+c      ENDIF
 
       RETURN
 
@@ -2007,11 +1987,11 @@ c KARLINE:
       INTEGER I, IMAX, J, JP1, K, KEY, KRANKE, LAST, LCHK, LINK, M,              
      &   MAPKE1, MDEQC, MEND, MEP1, N1, N2, NEXT, NLINK, NOPT, NP1,             
      &   NTIMES
-      LOGICAL COV, FIRST
+      LOGICAL COV !, FIRST  karline: toggled this off
 C      CHARACTER(LEN=8) XERN1, XERN2, XERN3, XERN4
-      SAVE FIRST, DRELPR
+C      SAVE FIRST, DRELPR  karline: toggled this off
 c
-      DATA FIRST /.TRUE./
+C      DATA FIRST /.TRUE./
 c***FIRST EXECUTABLE STATEMENT  xDLSEI
 c
 c     Set the nominal tolerance used in the code for the equality
@@ -2020,8 +2000,9 @@ c
 C karline: initialised IMAX to avoid unitialized warning
       IMAX = 0
       
-      IF (FIRST) DRELPR = D1MACH(4)
-      FIRST = .FALSE.
+C      IF (FIRST) DRELPR = D1MACH(4)
+C      FIRST = .FALSE.
+      DRELPR = D1MACH(4)
       TAU = SQRT(DRELPR)
 c
 c     Check that enough storage was allocated in WS(*) and IP(*).
@@ -3060,18 +3041,19 @@ c
       INTEGER I, IDOPE(3), IMAX, ISOL, ITEMP, ITER, ITMAX, IWMAX, J,            
      &   JCON, JP, KEY, KRANK, L1, LAST, LINK, M, ME, NEXT, NIV, NLINK,           
      &   NOPT, NSOLN, NTIMES
-      LOGICAL DONE, FEASBL, FIRST, HITCON, POS
+      LOGICAL DONE, FEASBL, HITCON, POS   !, FIRST karline: removed first
 c
-      SAVE DRELPR, FIRST
-      DATA FIRST /.TRUE./
+C      SAVE DRELPR, FIRST
+C      DATA FIRST /.TRUE./
 c***FIRST EXECUTABLE STATEMENT  DWNLSM
 c
 c     Initialize variables.
 c     DRELPR is the precision for the particular machine
 c     being used.  This logic avoids resetting it every entry.
 c
-      IF (FIRST) DRELPR = D1MACH(4)
-      FIRST = .FALSE.
+C      IF (FIRST) DRELPR = D1MACH(4)  karline: changed this
+C      FIRST = .FALSE.
+      DRELPR = D1MACH(4)
 c
 c     Set the nominal tolerance used in the code.
 c
@@ -4284,8 +4266,8 @@ c
       INTEGER IGO
       DIMENSION DPARAM(5)
 c
-      DATA ZERO,ONE,TWO /0.D0,1.D0,2.D0/
-      DATA GAM,GAMSQ,RGAMSQ/4096.D0,16777216.D0,5.9604645D-8/
+      PARAMETER (ZERO =0.D0, ONE = 1.D0,TWO = 2.D0)
+      PARAMETER (GAM = 4096.D0,GAMSQ =16777216.D0,RGAMSQ=5.9604645D-8)
 C Karline: initialized DH.. to avoid uninitialized warning
           DH11=ZERO
           DH12=ZERO
@@ -4519,8 +4501,8 @@ c
      &     NP1
       DOUBLE PRECISION A(MDA,*), xDDOT, xDNRM2, FAC, ONE,                       
      &     PRGOPT(*), RNORM, SC, WNORM, WS(*), X(*), YNORM, ZERO
-      SAVE ZERO, ONE, FAC
-      DATA ZERO,ONE /0.0D0,1.0D0/, FAC /0.1D0/
+      PARAMETER (ZERO = 0.0d0, ONE = 1.0d0,  FAC =0.1D0)
+
 c***FIRST EXECUTABLE STATEMENT  DLPDP
       N = N1 + N2
       MODE = 1
