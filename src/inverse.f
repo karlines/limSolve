@@ -2011,10 +2011,8 @@ c***END PROLOGUE  xDLSEI
 C KARLINE: CHANGED IP(3) INTO IP(*) ???? - added mIP, mWS, LPR
       INTEGER mIP, mWS, LPR 
       INTEGER IP(mIP), MA, MDW, ME, MG, MODE, N
-C KARLINE: CHANGED W(MDW,*) INTO W(MDW, N+1) ????
-      
       DOUBLE PRECISION PRGOPT(LPR),RNORME,RNORML
-      DOUBLE PRECISION W(MDW,N+1),WS(mWS),X(N)
+      DOUBLE PRECISION W(MDW,*),WS(mWS),X(*)
 c
       EXTERNAL D1MACH, xDASUM, xDAXPY, xDCOPY,xDDOT,xDH12,DLSI,xDNRM2,           
      &   xDSCAL, xDSWAP
@@ -2535,6 +2533,8 @@ c
 c        Solve the reduced problem with DLPDP algorithm,
 c        the least projected distance problem.
 c
+         CALL intpr("L2538 MAP1", -1, MAP1, 1)
+
          CALL DLPDP(W(MAP1,1), MDW, MG, KRANK, N-KRANK, PRGOPT, X,             
      &             XNORM, MDLPDP, WS(N2), IP(N+1))
 c
@@ -3345,8 +3345,6 @@ c
   220    CONTINUE
          IPIVOT(N) = ITEMP
          
-         CALL intpr("DWNLSM L", -1, 3350, 1)
-
 c
 c        Similarly permute X(*) vector.
 c
@@ -4644,11 +4642,7 @@ c              DO NOT CHECK LENGTHS OF WORK ARRAYS IN THIS USAGE OF
 c              DWNNLS( ).
                IS(1) = 0
                IS(2) = 0
-         CALL intpr("in DLDPDP Line 4650: M", -1, M, 1)
-         CALL intpr("in DLDPDP NP1", -1, NP1, 1)
-         CALL intpr("in DLDPDP IX", -1, IX, 1)
-         CALL intpr("in DLDPDP IW", -1, IW+1, 1)
-               
+
                CALL DWNNLS(WS,NP1,N2,NP1-N2,M,0,PRGOPT,WS(IX),RNORM,            
      &                     MODEW,IS,WS(IW+1))
 c
