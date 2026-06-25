@@ -1,7 +1,7 @@
 C Karline: removed the write statement; where they also passed an integer value, 
 C this no long is the case. Each removed statement is preceded by:
 C KARLINE: REMOVED WRITE, XXERMSG, XMESSAGE -> rwarn or rexit
-
+C Karline: assumed size W(MDA, *) -> W(MDA, N+1) in xdlsei
 
 C*********************************************************************
 C LEAST DISTANCE SUBROUTINE
@@ -1975,8 +1975,12 @@ c   900510  Convert XERRWV calls to xXERMSG calls.  (RWC)
 c   900604  DP version created from SP version.  (RWC)
 c   920501  Reformatted the REFERENCES section.  (WRB)
 c***END PROLOGUE  xDLSEI
-      INTEGER IP(3), MA, MDW, ME, MG, MODE, N
-      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,*), WS(*), X(*)
+
+C Karline: changed IP(3) into IP(*), and W(MDW, *) into W(MDW, N+1)
+      INTEGER IP(*), MA, MDW, ME, MG, MODE, N
+!      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,*), WS(*), X(*)
+      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,N+1)
+      DOUBLE PRECISION WS(*), X(*)
 c
       EXTERNAL D1MACH, xDASUM, xDAXPY, xDCOPY,xDDOT,xDH12,DLSI,xDNRM2,           
      &   xDSCAL, xDSWAP !, xXERMSG
@@ -2215,7 +2219,10 @@ c     Move reduced problem data upward if KRANKE.LT.ME.
 c
       IF (KRANKE.LT.ME) THEN
          DO 200 J = 1,NP1
-            CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+!  karline: removed  CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+           DO K = 1, M - ME
+              W(KRANKE+K,J) = W(ME+K,J)
+           END DO
   200    CONTINUE
       ENDIF
 c
@@ -2285,7 +2292,11 @@ c
                DO 260 I = JP1,N
                   W(J,I) = UJ*W(I,J) + VJ*W(J,I)
   260          CONTINUE
-               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
+!               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
+!  karline: replaced by:
+           DO K = 1,N-J
+              W(J+K,J) = W(J,J+K)
+           END DO
   270       CONTINUE
          ENDIF
       ENDIF
