@@ -28,10 +28,7 @@ abstract: >
   and operations research problems.
   Package limSolve contains examples of these four application domains.
   In addition, limSolve also contains special-purpose solvers for sparse
-  linear equations (banded, tridiagonal, block diagonal)."
-  
-  
-  
+  linear equations (banded, tridiagonal, block diagonal).
   Amongst the possible scientific applications are: food web quantification
 editor_options: 
   markdown: 
