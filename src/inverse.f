@@ -2455,7 +2455,8 @@ c
 c      CALL xDHFTI (W, MDW, MA, N, WS, MA, 1, TAU, KRANK, RNORM, WS(N2),  WS(N1), IP)
 c KARLINE:ADDED both next sentences ...
         RNORMV(1) = RNORM       
-        MDB = MAX(MA,N)
+C        MDB = MAX(MA,N)
+      MDB = MA
       CALL xDHFTI (W, MDW, MA, N, WS, MDB, 1,TAU,KRANK, RNORMV, WS(N2),        
      &           WS(N1), IP)   
       RNORM = RNORMV(1)   ! and this one added as well
