@@ -3,7 +3,6 @@ title: "Package limSolve: solving linear inverse models in R"
 author: "Karline Soetaert, Karel van den Meersche and Dick van Oevelen"
 date: "18 November 2022"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
     toc: true
@@ -11,6 +10,7 @@ output:
     toc_float: true
     code_folding: show
     theme: flatly
+  pdf_document: default
 vignette: >
   %\VignetteIndexEntry{Package limSolve, solving linear inverse models in R} 
   %\VignetteEncoding{UTF-8}\n"
@@ -20,12 +20,15 @@ abstract: >
   consisting of linear equality and or linear inequality conditions,
   which may be supplemented with approximate linear equations, or a target
   (cost, profit) function.
+  
   Depending on the determinacy of these models, they can be solved by least
   squares or linear programming techniques, by calculating ranges of unknowns
   or by randomly sampling the feasible solution space.
+  
   (ecology),   flux balance analysis (e.g. quantification of metabolic networks,
   systems biology), compositional estimation (ecology, chemistry,...),
   and operations research problems.
+  
   Package limSolve contains examples of these four application domains.
   In addition, limSolve also contains special-purpose solvers for sparse
   linear equations (banded, tridiagonal, block diagonal).
