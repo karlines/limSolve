@@ -5137,24 +5137,25 @@ C***********************************************************************
 C SUBROUTINE to be called instead of XDCOPY 
 C when elements are moved around in a MATRIX
 C***********************************************************************
-      SUBROUTINE XDMOVE2D(N, MDX, DX, IX,JX,INCX, IY,JY,INCY)
+      SUBROUTINE XDMOVE2D(N, MDX, DX, Ifrom,Jfrom,INCfrom, 
+     &                                Ito,  Jto,  INCto)
 C
 C     MOVES ELEMENTS IN A MATRIX, DX
 C
-      INTEGER MDX     ! leading dimension of matrix DX
+      INTEGER MDX                  ! leading dimension of matrix DX
       DOUBLE PRECISION DX(MDX, *)
       
-      INTEGER IX, JX  ! start position of elements to move from in DX(I,J)
-      INTEGER IY, JY  ! start position of elements to move   to in DX(I,J)
+      INTEGER Ifrom, Jfrom  ! start position of elements to move from in DX(I,J)
+      INTEGER Ito,   Jto    ! start position of elements to move   to in DX(I,J)
 
-      INTEGER INCX, INCY, IXvec, IYvec
+      INTEGER INCfrom, INCto, IXvec, IYvec
 
 C     position of starting elements when DX is assumed a vector
 
-      IXvec = (JX - 1)*MDX + IX  
-      IYvec = (JY - 1)*MDX + IY  
+      IXvec = (Jfrom - 1)*MDX + Ifrom  
+      IYvec = (Jto   - 1)*MDX + Ito  
 
-      CALL XDMOVE(N, DX, IXvec,INCX, IYvec,INCY)
+      CALL XDMOVE(N, DX, IXvec,INCfrom, IYvec,INCto)
       
       RETURN
       END SUBROUTINE XDMOVE2D
