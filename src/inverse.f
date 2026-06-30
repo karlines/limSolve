@@ -1,6 +1,7 @@
 C Karline: removed the write statement
 C          WRITE, XXERMSG, XMESSAGE -> rwarn or rexit
-C Karline: XDCOPY within same vector or matrix -> XDMOVE or XDMOVE2D
+C Karline: XDCOPY within same vector -> XDMOVE 
+C Karline: XDCOPY within same matric -> XDMOVE2D
 C Karline: SAVFE and DATA statements removed
 
 C*********************************************************************
@@ -1402,58 +1403,6 @@ C
       end
 
 
-C***********************************************************************
-      SUBROUTINE XDCOPY(N,DX,INCX,DY,INCY)
-C
-C     COPIES A VECTOR, X, TO A VECTOR, Y.
-C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-C     JACK DONGARRA, LINPACK, 3/11/78.
-C
-      DOUBLE PRECISION DX(*),DY(*)
-      INTEGER I,INCX,INCY,IX,IY,M,MP1,N
-C
-      IF(N.LE.0)RETURN
-      IF(INCX.EQ.1.AND.INCY.EQ.1)GO TO 20
-C
-C        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
-C          NOT EQUAL TO 1
-C
-      IX = 1
-      IY = 1
-      IF(INCX.LT.0)IX = (-N+1)*INCX + 1
-      IF(INCY.LT.0)IY = (-N+1)*INCY + 1
-      DO 10 I = 1,N
-        DY(IY) = DX(IX)
-        IX = IX + INCX
-        IY = IY + INCY
-   10 CONTINUE
-      RETURN
-C
-C        CODE FOR BOTH INCREMENTS EQUAL TO 1
-C
-C
-C        CLEAN-UP LOOP
-C
-   20 M = MOD(N,7)
-      IF( M .EQ. 0 ) GO TO 40
-      DO 30 I = 1,M
-        DY(I) = DX(I)
-   30 CONTINUE
-      IF( N .LT. 7 ) RETURN
-   40 MP1 = M + 1
-      DO 50 I = MP1,N,7
-        DY(I) = DX(I)
-        DY(I + 1) = DX(I + 1)
-        DY(I + 2) = DX(I + 2)
-        DY(I + 3) = DX(I + 3)
-        DY(I + 4) = DX(I + 4)
-        DY(I + 5) = DX(I + 5)
-        DY(I + 6) = DX(I + 6)
-   50 CONTINUE
-      RETURN
-      END
-
-
 C********************************************************************
       integer function xidamax(n,dx,incx)
 
@@ -2217,7 +2166,10 @@ c     Move reduced problem data upward if KRANKE.LT.ME.
 c
       IF (KRANKE.LT.ME) THEN
          DO 200 J = 1,NP1
-           CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+!           CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+! KARLINE: Changed to XDMOVE2D
+          CALL xDMOVE2D (M-ME, MDW, W, ME+1,J,1, KRANKE+1,J,1)    
+
 ! karline           DO K = 1, M - ME
 !              W(KRANKE+K,J) = W(ME+K,J)
 !           END DO
@@ -2290,7 +2242,9 @@ c
                DO 260 I = JP1,N
                   W(J,I) = UJ*W(I,J) + VJ*W(J,I)
   260          CONTINUE
-               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
+!               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
+           CALL xDMOVE2D (N-J, MDW, W, J,JP1,MDW, JP1,J,1)
+               
 !  karline: replaced by:
 !           DO K = 1,N-J
 !              W(J+K,J) = W(J,J+K)
@@ -2586,7 +2540,9 @@ c     Copy upper triangular to lower triangular part.
 c
       IF (KRANK.LT.N) THEN
          DO 260 J = 1,KRANK
-            CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW)
+!            CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW)
+! Karline: changed to XDMOVE2D
+            CALL xDMOVE2D (J, MDW, W, 1,J,1, J,1,MDW)
   260    CONTINUE
 c
          DO 270 I = KRP1,N
@@ -2641,7 +2597,9 @@ c        Copy lower triangle to upper triangle to symmetrize the
 c        covariance matrix.
 c
          DO 340 I = 1,N
-            CALL xDCOPY (I, W(I,1), MDW, W(1,I), 1)
+!            CALL xDCOPY (I, W(I,1), MDW, W(1,I), 1)
+! Karline: changed to XDMOVE2D
+            CALL xDMOVE2D (I, MDW, W, I,1,MDW, 1,I,1)
   340    CONTINUE
       ENDIF
 c
@@ -2662,7 +2620,8 @@ c     and symmetrize the resulting covariance matrix.
 c
       DO 360 J = 1,N
          CALL xDSCAL (J, FAC, W(1,J), 1)
-         CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW)
+!         CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW) changed to XDMOVE2D
+         CALL xDMOVE2D (J, MDW, W, 1,J,1, J,1,MDW)
   360 CONTINUE
 c
   370 IP(1) = KRANK
@@ -3298,7 +3257,8 @@ c        leaves an upper Hessenberg matrix to retriangularize.
 c
   200    DO 210 I = 1,M
             T = W(I,JCON)
-            CALL xDCOPY (N-JCON, W(I, JCON+1), MDW, W(I, JCON), MDW)
+!            CALL xDCOPY (N-JCON, W(I, JCON+1), MDW, W(I, JCON), MDW)
+            CALL xDMOVE2D (N-JCON, MDW, W, I,JCON+1,MDW, I,JCON,MDW)            
             W(I,N) = T
   210    CONTINUE
 c
@@ -3312,7 +3272,8 @@ c
 c
 c        Similarly permute X(*) vector.
 c
-         CALL xDCOPY (N-JCON, X(JCON+1), 1, X(JCON), 1)
+!         CALL xDCOPY (N-JCON, X(JCON+1), 1, X(JCON), 1)  CHANGED TO XDMOVE
+         CALL xDMOVE (N-JCON, X, JCON+1,1, JCON,1)
          X(N) = 0.D0
          NSOLN = NSOLN - 1
          NIV = NIV - 1
@@ -4519,7 +4480,8 @@ c***FIRST EXECUTABLE STATEMENT  DLPDP
       IF (M .GT. 0) GO TO 20
          IF (N .LE. 0) GO TO 10
             X(1) = ZERO
-            CALL xDCOPY(N,X,0,X,1)
+!            CALL xDCOPY(N,X,0,X,1) -> XDMOVE
+            CALL xDMOVE(N, X, 1,0, 1,1)
    10    CONTINUE
          WNORM = ZERO
       GO TO 200
@@ -4572,7 +4534,8 @@ c                 MOVE COMPONENT OF VECTOR Y INTO WORK ARRAY.
                   IW = IW + 1
    80          CONTINUE
                WS(IW+1) = ZERO
-               CALL xDCOPY(N,WS(IW+1),0,WS(IW+1),1)
+!               CALL xDCOPY(N,WS(IW+1),0,WS(IW+1),1) -> XDMOVE
+               CALL xDCOPY(N, WS, IW+1,0, IW+1,1)
                IW = IW + N
                WS(IW+1) = ONE
                IW = IW + 1
@@ -4622,7 +4585,8 @@ c              COPY TRANSPOSE OF (H Q) TO WORK ARRAY WS(*).
                   IW = IW + 1
   140          CONTINUE
                WS(IW+1) = ZERO
-               CALL xDCOPY(N2,WS(IW+1),0,WS(IW+1),1)
+!               CALL xDCOPY(N2,WS(IW+1),0,WS(IW+1),1) -> XDMOVE
+               CALL xDMOVE(N2, WS, IW+1,0, IW+1,1)
                IW = IW + N2
                WS(IW+1) = ONE
                IW = IW + 1
@@ -5138,6 +5102,112 @@ c         IN THE FIRST  N  ROWS OF THE ARRAY B(,).
 c
          KRANK = K
   360 CONTINUE
+      RETURN
+      END
+
+
+C***********************************************************************
+C SUBROUTINE to be called instead of XDCOPY 
+C when elements are moved around in a VECTOR
+C***********************************************************************
+      SUBROUTINE XDMOVE(N, DX, IX,INCX, IY,INCY)
+C
+C     MOVES ELEMENTS IN A VECTOR, DX.
+C
+      DOUBLE PRECISION DX(*)
+      INTEGER IX, IY  ! start position of elements to move from/to in DX
+
+      INTEGER I, INCX, INCY, M, MP1, N
+C
+      IF(N.LE.0)RETURN
+
+
+      IF(INCX.LT.0) IX = (-N+1)*INCX + IX
+      IF(INCY.LT.0) IY = (-N+1)*INCY + IY
+      
+      DO 10 I = 1,N
+        DX(IY) = DX(IX)
+        IX     = IX + INCX
+        IY     = IY + INCY
+   10 CONTINUE
+   
+      RETURN
+      END SUBROUTINE XDMOVE
+
+C***********************************************************************
+C SUBROUTINE to be called instead of XDCOPY 
+C when elements are moved around in a MATRIX
+C***********************************************************************
+      SUBROUTINE XDMOVE2D(N, MDX, DX, IX,JX,INCX, IY,JY,INCY)
+C
+C     MOVES ELEMENTS IN A MATRIX, DX
+C
+      INTEGER MDX     ! leading dimension of matrix DX
+      DOUBLE PRECISION DX(MDX, *)
+      
+      INTEGER IX, JX, ! start position of elements to move from in DX
+      INTEGER IY, JY  ! start position of elements to move to in DX
+
+      INTEGER INCX, INCY, IXvec, IYvec
+
+C     position of starting elements when DX is assumed a vector
+
+      IXvec = (IX - 1)*MDX + JX
+      IYvec = (IY - 1)*MDX + JY
+
+      CALL XDMOVE(N, DX, IXvec, INCX, IYvec, INCY)
+      
+      RETURN
+      END SUBROUTINE XDMOVE2D
+
+C***********************************************************************
+      SUBROUTINE XDCOPY(N,DX,INCX,DY,INCY)
+C
+C     COPIES A VECTOR, X, TO A VECTOR, Y.
+C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
+C     JACK DONGARRA, LINPACK, 3/11/78.
+C
+      DOUBLE PRECISION DX(*),DY(*)
+      INTEGER I,INCX,INCY,IX,IY,M,MP1,N
+C
+      IF(N.LE.0)RETURN
+      IF(INCX.EQ.1.AND.INCY.EQ.1)GO TO 20
+C
+C        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
+C          NOT EQUAL TO 1
+C
+      IX = 1
+      IY = 1
+      IF(INCX.LT.0)IX = (-N+1)*INCX + 1
+      IF(INCY.LT.0)IY = (-N+1)*INCY + 1
+      DO 10 I = 1,N
+        DY(IY) = DX(IX)
+        IX = IX + INCX
+        IY = IY + INCY
+   10 CONTINUE
+      RETURN
+C
+C        CODE FOR BOTH INCREMENTS EQUAL TO 1
+C
+C
+C        CLEAN-UP LOOP
+C
+   20 M = MOD(N,7)
+      IF( M .EQ. 0 ) GO TO 40
+      DO 30 I = 1,M
+        DY(I) = DX(I)
+   30 CONTINUE
+      IF( N .LT. 7 ) RETURN
+   40 MP1 = M + 1
+      DO 50 I = MP1,N,7
+        DY(I) = DX(I)
+        DY(I + 1) = DX(I + 1)
+        DY(I + 2) = DX(I + 2)
+        DY(I + 3) = DX(I + 3)
+        DY(I + 4) = DX(I + 4)
+        DY(I + 5) = DX(I + 5)
+        DY(I + 6) = DX(I + 6)
+   50 CONTINUE
       RETURN
       END
 
