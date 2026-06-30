@@ -5145,7 +5145,7 @@ C
       INTEGER MDX     ! leading dimension of matrix DX
       DOUBLE PRECISION DX(MDX, *)
       
-      INTEGER IX, JX, ! start position of elements to move from in DX
+      INTEGER IX, JX  ! start position of elements to move from in DX
       INTEGER IY, JY  ! start position of elements to move to in DX
 
       INTEGER INCX, INCY, IXvec, IYvec
