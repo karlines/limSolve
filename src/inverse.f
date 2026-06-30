@@ -1,7 +1,7 @@
-C Karline: removed the write statement; where they also passed an integer value, 
-C this no long is the case. Each removed statement is preceded by:
-C KARLINE: REMOVED WRITE, XXERMSG, XMESSAGE -> rwarn or rexit
-C Karline: assumed size W(MDA, *) -> W(MDA, N+1) in xdlsei
+C Karline: removed the write statement
+C          WRITE, XXERMSG, XMESSAGE -> rwarn or rexit
+C Karline: XDCOPY within same vector or matrix -> XDMOVE or XDMOVE2D
+C Karline: SAVFE and DATA statements removed
 
 C*********************************************************************
 C LEAST DISTANCE SUBROUTINE
@@ -1978,9 +1978,7 @@ c***END PROLOGUE  xDLSEI
 
 C Karline: changed IP(3) into IP(*), and W(MDW, *) into W(MDW, N+1)
       INTEGER IP(*), MA, MDW, ME, MG, MODE, N
-!      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,*), WS(*), X(*)
-      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,N+1)
-      DOUBLE PRECISION WS(*), X(*)
+      DOUBLE PRECISION PRGOPT(*), RNORME, RNORML, W(MDW,*), WS(*), X(*)
 c
       EXTERNAL D1MACH, xDASUM, xDAXPY, xDCOPY,xDDOT,xDH12,DLSI,xDNRM2,           
      &   xDSCAL, xDSWAP !, xXERMSG
@@ -2219,10 +2217,10 @@ c     Move reduced problem data upward if KRANKE.LT.ME.
 c
       IF (KRANKE.LT.ME) THEN
          DO 200 J = 1,NP1
-!  karline: removed  CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
-           DO K = 1, M - ME
-              W(KRANKE+K,J) = W(ME+K,J)
-           END DO
+           CALL xDCOPY (M-ME, W(ME+1,J), 1, W(KRANKE+1,J), 1)
+! karline           DO K = 1, M - ME
+!              W(KRANKE+K,J) = W(ME+K,J)
+!           END DO
   200    CONTINUE
       ENDIF
 c
@@ -2455,7 +2453,7 @@ c
 c      CALL xDHFTI (W, MDW, MA, N, WS, MA, 1, TAU, KRANK, RNORM, WS(N2),  WS(N1), IP)
 c KARLINE:ADDED both next sentences ...
         RNORMV(1) = RNORM       
-C        MDB = MAX(MA,N)
+C        MDB = MAX(MA,N)   ! removed this - used to be MDB = MA
       MDB = MA
       CALL xDHFTI (W, MDW, MA, N, WS, MDB, 1,TAU,KRANK, RNORMV, WS(N2),        
      &           WS(N1), IP)   
@@ -4281,10 +4279,10 @@ c
       PARAMETER (ZERO =0.D0, ONE = 1.D0,TWO = 2.D0)
       PARAMETER (GAM = 4096.D0,GAMSQ =16777216.D0,RGAMSQ=5.9604645D-8)
 C Karline: initialized DH.. to avoid uninitialized warning
-          DH11=ZERO
-          DH12=ZERO
-          DH21=ZERO
-          DH22=ZERO
+      DH11=ZERO
+      DH12=ZERO
+      DH21=ZERO
+      DH22=ZERO
       
       IF(.NOT. DD1 .LT. ZERO) GO TO 10
 c       GO ZERO-H-D-AND-DX1..
