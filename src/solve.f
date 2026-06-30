@@ -2720,6 +2720,7 @@ C      DATA               FIRST / .TRUE. /
 *     .. Executable Statements ..
 *
 C      IF( FIRST ) THEN
+         FIRST = .TRUE.
          CALL DLAMC2( BETA, IT, LRND, EPS, IMIN, RMIN, IMAX, RMAX )
          BASE = BETA
          T = IT
@@ -2769,7 +2770,7 @@ C      END IF
       END IF
 *
       DLAMCH = RMACH
-      FIRST  = .FALSE.
+C      FIRST  = .FALSE.
       RETURN
 *
 *     End of DLAMCH
@@ -2872,7 +2873,10 @@ C      DATA               FIRST / .TRUE. / , IWARN / .FALSE. /
 *     .. Executable Statements ..
 *
 C      IF( FIRST ) THEN
-         FIRST = .FALSE.
+C         FIRST = .FALSE.
+         FIRST = .TRUE.
+         IWARN = .FALSE.
+         
          ZERO = 0
          ONE = 1
          TWO = 2
@@ -3107,7 +3111,7 @@ C      DATA               FIRST / .TRUE. /
 *     .. Executable Statements ..
 *
 C      IF( FIRST ) THEN
-         FIRST = .FALSE.
+         FIRST = .TRUE.
          ONE = 1
 *
 *        LBETA,  LIEEE1,  LT and  LRND  are the  local values  of  BETA,
