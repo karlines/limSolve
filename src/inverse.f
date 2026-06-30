@@ -5116,7 +5116,7 @@ C
       DOUBLE PRECISION DX(*)
       INTEGER Ifrom, Ito  ! start position of elements to move from/to in DX
 
-      INTEGER I, INCfrom, INCto, M, MP1, N
+      INTEGER I, INCfrom, INCto, N
 C
       IF(N.LE.0)RETURN
 

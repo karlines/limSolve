@@ -3,7 +3,7 @@ C "INDEX" in xxerrprn and string comparison in ILAENV
 C ilaenv was completely removed.
 C KS: 03/06/2026:  in DGBTRS, DGETRS
 C CHANGED THE DECLARATION OF TRANS from CHARACTER TO CHARACTER(*) 
-C KS: removed save and data statements
+
 C************************************************************************
 C TRIDIAGONAL MATRIX SOLVERS
 C************************************************************************
@@ -2780,7 +2780,6 @@ C      FIRST  = .FALSE.
 
 
 
-
       SUBROUTINE DLAMC2( BETA, T, RND, EPS, EMIN, RMIN, EMAX, RMAX )
 *
 *  -- LAPACK auxiliary routine (version 3.0) --
@@ -2864,19 +2863,16 @@ C      FIRST  = .FALSE.
       INTRINSIC          ABS, MAX, MIN
 *     ..
 *     .. Save statement ..
-C      SAVE               FIRST, IWARN, LBETA, LEMAX, LEMIN, LEPS, LRMAX,
-C     $                   LRMIN, LT
+      SAVE               FIRST, IWARN, LBETA, LEMAX, LEMIN, LEPS, LRMAX,
+     $                   LRMIN, LT
 *     ..
 *     .. Data statements ..
-C      DATA               FIRST / .TRUE. / , IWARN / .FALSE. /
+      DATA               FIRST / .TRUE. / , IWARN / .FALSE. /
 *     ..
 *     .. Executable Statements ..
 *
-C      IF( FIRST ) THEN
-C         FIRST = .FALSE.
-         FIRST = .TRUE.
-         IWARN = .FALSE.
-         
+      IF( FIRST ) THEN
+         FIRST = .FALSE.
          ZERO = 0
          ONE = 1
          TWO = 2
@@ -2922,7 +2918,7 @@ C         FIRST = .FALSE.
             C = DLAMC3( HALF, -B )
             B = DLAMC3( HALF, C )
             GO TO 10
-C         END IF
+         END IF
 *+       END WHILE
 *
          IF( A.LT.LEPS )
@@ -3041,6 +3037,8 @@ C         END IF
 *
       END
 
+
+
       SUBROUTINE DLAMC1( BETA, T, RND, IEEE1 )
 *
 *  -- LAPACK auxiliary routine (version 3.0) --
@@ -3111,7 +3109,7 @@ C      DATA               FIRST / .TRUE. /
 *     .. Executable Statements ..
 *
 C      IF( FIRST ) THEN
-         FIRST = .TRUE.
+         FIRST = .FALSE.
          ONE = 1
 *
 *        LBETA,  LIEEE1,  LT and  LRND  are the  local values  of  BETA,
@@ -3308,7 +3306,7 @@ C      END IF
       ONE = 1
       RBASE = ONE / BASE
       ZERO = 0
-      EMIN = 13
+      EMIN = 1
       B1 = DLAMC3( A*RBASE, ZERO )
       C1 = A
       C2 = A
