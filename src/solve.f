@@ -3,7 +3,7 @@ C "INDEX" in xxerrprn and string comparison in ILAENV
 C ilaenv was completely removed.
 C KS: 03/06/2026:  in DGBTRS, DGETRS
 C CHANGED THE DECLARATION OF TRANS from CHARACTER TO CHARACTER(*) 
-
+C KS: removed save and data statements
 C************************************************************************
 C TRIDIAGONAL MATRIX SOLVERS
 C************************************************************************
