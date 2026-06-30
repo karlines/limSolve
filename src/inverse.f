@@ -5109,25 +5109,25 @@ C***********************************************************************
 C SUBROUTINE to be called instead of XDCOPY 
 C when elements are moved around in a VECTOR
 C***********************************************************************
-      SUBROUTINE XDMOVE(N, DX, IX,INCX, IY,INCY)
+      SUBROUTINE XDMOVE(N, DX, Ifrom,INCfrom, Ito,INCto)
 C
-C     MOVES ELEMENTS IN A VECTOR, DX.
+C     MOVES ELEMENTS IN A double precision VECTOR, DX.
 C
       DOUBLE PRECISION DX(*)
-      INTEGER IX, IY  ! start position of elements to move from/to in DX
+      INTEGER Ifrom, Ito  ! start position of elements to move from/to in DX
 
-      INTEGER I, INCX, INCY, M, MP1, N
+      INTEGER I, INCfrom, INCto, M, MP1, N
 C
       IF(N.LE.0)RETURN
 
 
-      IF(INCX.LT.0) IX = (-N+1)*INCX + IX
-      IF(INCY.LT.0) IY = (-N+1)*INCY + IY
+      IF(INCfrom.LT.0) Ifrom = (-N+1)*INCfrom + Ifrom
+      IF(INCto  .LT.0) Ito   = (-N+1)*INCto   + Ito
       
       DO 10 I = 1,N
-        DX(IY) = DX(IX)
-        IX     = IX + INCX
-        IY     = IY + INCY
+        DX(Ito) = DX(Ifrom)
+        Ifrom  = Ifrom + INCfrom
+        Ito    = Ito   + INCto
    10 CONTINUE
    
       RETURN
