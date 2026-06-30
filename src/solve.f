@@ -3308,7 +3308,7 @@ C      END IF
       ONE = 1
       RBASE = ONE / BASE
       ZERO = 0
-      EMIN = 1
+      EMIN = 13
       B1 = DLAMC3( A*RBASE, ZERO )
       C1 = A
       C2 = A
