@@ -2290,11 +2290,11 @@ c
                DO 260 I = JP1,N
                   W(J,I) = UJ*W(I,J) + VJ*W(J,I)
   260          CONTINUE
-!               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
+               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
 !  karline: replaced by:
-           DO K = 1,N-J
-              W(J+K,J) = W(J,J+K)
-           END DO
+!           DO K = 1,N-J
+!              W(J+K,J) = W(J,J+K)
+!           END DO
   270       CONTINUE
          ENDIF
       ENDIF
