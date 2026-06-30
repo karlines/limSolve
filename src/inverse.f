@@ -4535,7 +4535,7 @@ c                 MOVE COMPONENT OF VECTOR Y INTO WORK ARRAY.
    80          CONTINUE
                WS(IW+1) = ZERO
 !               CALL xDCOPY(N,WS(IW+1),0,WS(IW+1),1) -> XDMOVE
-               CALL xDCOPY(N, WS, IW+1,0, IW+1,1)
+               CALL xDMOVE(N, WS, IW+1,0, IW+1,1)
                IW = IW + N
                WS(IW+1) = ONE
                IW = IW + 1
