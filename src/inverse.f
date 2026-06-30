@@ -2170,7 +2170,7 @@ c
 ! KARLINE: Changed to XDMOVE2D
           CALL xDMOVE2D (M-ME, MDW, W, ME+1,J,1, KRANKE+1,J,1)    
 
-! karline           DO K = 1, M - ME
+!           DO K = 1, M - ME   ! karline
 !              W(KRANKE+K,J) = W(ME+K,J)
 !           END DO
   200    CONTINUE
@@ -2242,7 +2242,7 @@ c
                DO 260 I = JP1,N
                   W(J,I) = UJ*W(I,J) + VJ*W(J,I)
   260          CONTINUE
-!               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)
+!               CALL xDCOPY (N-J, W(J, JP1), MDW, W(JP1,J), 1)! -> XDMOVE2D
            CALL xDMOVE2D (N-J, MDW, W, J,JP1,MDW, JP1,J,1)
                
 !  karline: replaced by:
@@ -2540,8 +2540,8 @@ c     Copy upper triangular to lower triangular part.
 c
       IF (KRANK.LT.N) THEN
          DO 260 J = 1,KRANK
-!            CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW)
-! Karline: changed to XDMOVE2D
+!            CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW)! Karline: changed to XDMOVE2D
+
             CALL xDMOVE2D (J, MDW, W, 1,J,1, J,1,MDW)
   260    CONTINUE
 c
@@ -2597,8 +2597,7 @@ c        Copy lower triangle to upper triangle to symmetrize the
 c        covariance matrix.
 c
          DO 340 I = 1,N
-!            CALL xDCOPY (I, W(I,1), MDW, W(1,I), 1)
-! Karline: changed to XDMOVE2D
+!            CALL xDCOPY (I, W(I,1), MDW, W(1,I), 1) ! Karline: changed to XDMOVE2D
             CALL xDMOVE2D (I, MDW, W, I,1,MDW, 1,I,1)
   340    CONTINUE
       ENDIF
@@ -2620,7 +2619,7 @@ c     and symmetrize the resulting covariance matrix.
 c
       DO 360 J = 1,N
          CALL xDSCAL (J, FAC, W(1,J), 1)
-!         CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW) changed to XDMOVE2D
+!         CALL xDCOPY (J, W(1,J), 1, W(J,1), MDW) ! changed to XDMOVE2D
          CALL xDMOVE2D (J, MDW, W, 1,J,1, J,1,MDW)
   360 CONTINUE
 c
@@ -3257,7 +3256,7 @@ c        leaves an upper Hessenberg matrix to retriangularize.
 c
   200    DO 210 I = 1,M
             T = W(I,JCON)
-!            CALL xDCOPY (N-JCON, W(I, JCON+1), MDW, W(I, JCON), MDW)
+!            CALL xDCOPY (N-JCON, W(I, JCON+1), MDW, W(I, JCON), MDW) ! -> XDMOVE2D
             CALL xDMOVE2D (N-JCON, MDW, W, I,JCON+1,MDW, I,JCON,MDW)            
             W(I,N) = T
   210    CONTINUE
@@ -3272,7 +3271,7 @@ c
 c
 c        Similarly permute X(*) vector.
 c
-!         CALL xDCOPY (N-JCON, X(JCON+1), 1, X(JCON), 1)  CHANGED TO XDMOVE
+!         CALL xDCOPY (N-JCON, X(JCON+1), 1, X(JCON), 1) ! CHANGED TO XDMOVE
          CALL xDMOVE (N-JCON, X, JCON+1,1, JCON,1)
          X(N) = 0.D0
          NSOLN = NSOLN - 1
@@ -4480,7 +4479,7 @@ c***FIRST EXECUTABLE STATEMENT  DLPDP
       IF (M .GT. 0) GO TO 20
          IF (N .LE. 0) GO TO 10
             X(1) = ZERO
-!            CALL xDCOPY(N,X,0,X,1) -> XDMOVE
+!            CALL xDCOPY(N,X,0,X,1) !-> XDMOVE
             CALL xDMOVE(N, X, 1,0, 1,1)
    10    CONTINUE
          WNORM = ZERO
@@ -4534,7 +4533,7 @@ c                 MOVE COMPONENT OF VECTOR Y INTO WORK ARRAY.
                   IW = IW + 1
    80          CONTINUE
                WS(IW+1) = ZERO
-!               CALL xDCOPY(N,WS(IW+1),0,WS(IW+1),1) -> XDMOVE
+!               CALL xDCOPY(N,WS(IW+1),0,WS(IW+1),1)  ! -> XDMOVE
                CALL xDMOVE(N, WS, IW+1,0, IW+1,1)
                IW = IW + N
                WS(IW+1) = ONE
@@ -4585,7 +4584,7 @@ c              COPY TRANSPOSE OF (H Q) TO WORK ARRAY WS(*).
                   IW = IW + 1
   140          CONTINUE
                WS(IW+1) = ZERO
-!               CALL xDCOPY(N2,WS(IW+1),0,WS(IW+1),1) -> XDMOVE
+!               CALL xDCOPY(N2,WS(IW+1),0,WS(IW+1),1) ! -> XDMOVE
                CALL xDMOVE(N2, WS, IW+1,0, IW+1,1)
                IW = IW + N2
                WS(IW+1) = ONE
@@ -5145,17 +5144,17 @@ C
       INTEGER MDX     ! leading dimension of matrix DX
       DOUBLE PRECISION DX(MDX, *)
       
-      INTEGER IX, JX  ! start position of elements to move from in DX
-      INTEGER IY, JY  ! start position of elements to move to in DX
+      INTEGER IX, JX  ! start position of elements to move from in DX(I,J)
+      INTEGER IY, JY  ! start position of elements to move   to in DX(I,J)
 
       INTEGER INCX, INCY, IXvec, IYvec
 
 C     position of starting elements when DX is assumed a vector
 
-      IXvec = (IX - 1)*MDX + JX
-      IYvec = (IY - 1)*MDX + JY
+      IXvec = (JX - 1)*MDX + IX  
+      IYvec = (JY - 1)*MDX + IY  
 
-      CALL XDMOVE(N, DX, IXvec, INCX, IYvec, INCY)
+      CALL XDMOVE(N, DX, IXvec,INCX, IYvec,INCY)
       
       RETURN
       END SUBROUTINE XDMOVE2D
